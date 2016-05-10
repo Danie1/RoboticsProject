@@ -24,7 +24,7 @@ Map::~Map()
 {
 }
 
-bool Map::IsCellClear(unsigned char cell)
+bool Map::isCellClear(unsigned char cell)
 {
 	return cell == 255;
 }
@@ -63,7 +63,7 @@ void Map::LoadMap(const char* mapFileName)
 	{
 		for (dword col = 0; col < m_width; col++)
 		{
-			m_map[row][col] = IsCellClear(m_pixels[pixelIter]);
+			m_map[row][col] = isCellClear(m_pixels[pixelIter]);
 
 			pixelIter+= 4;
 		}
@@ -163,4 +163,24 @@ void Map::setSize(unsigned int height, unsigned int width)
 bool Map::isInMapBoundaries(int i, int j)
 {
 	return (i >= 0 && i < (int)m_height && j >= 0 && j < (int)m_width);
+}
+
+dword Map::GetHeight()
+{
+	return m_height;
+}
+
+dword Map::GetWidth()
+{
+	return m_width;
+}
+
+bool Map::IsCellClear(dword row, dword col)
+{
+	if (row > m_height || col > m_width)
+	{
+		printf("row or call are out of bounds\n");
+		exit(0);
+	}
+	return m_map[row][col];
 }

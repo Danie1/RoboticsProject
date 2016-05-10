@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include "stdio.h"
 #include "Utils.h"
+#include "Graph.h"
 
 
 #define MAX_FILE_PATH (30)
@@ -28,6 +29,11 @@ int main()
 	Map myMap(mapResolution, robotSize);
 	myMap.LoadMap(inputMapFileName);
 	myMap.InflateObstacles();
+
+	// Create Graph from map
+	Graph myGraph;
+	myGraph.BuildGraphFromMap(myMap);
+
 	myMap.SaveMap(outputMapFileName);
 
 	printf("FINSIH!!!\n");

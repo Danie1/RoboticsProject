@@ -13,4 +13,6 @@ typedef unsigned short word;
 typedef unsigned int dword;
 typedef unsigned long long int qword;
 
+#define NULL 0
+
 #endif /* TYPEDEFS_H_ */
