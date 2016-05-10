@@ -1,0 +1,5 @@
+inMap: roboticLabMap.png
+outMap: roboticLabMapOUT.png
+robotSizeM: 0.3
+MapResolutionM: 0.025
+
