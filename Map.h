@@ -25,10 +25,6 @@ class Map
 		double m_robotSize;
 
 
-		void printMap();
-		bool IsCellClear(byte cell);
-		void setObstacle(Map* map, int row, int col, int inflationRadius);
-
 	public:
 		Map(double mapResolution, double robotSize);
 		virtual ~Map();
@@ -36,9 +32,19 @@ class Map
 		void LoadMap(const char* mapFileName);
 		void InflateObstacles();
 		void SaveMap(const char* mapFileName);
+		bool IsCellClear(dword row, dword col);
+
+		vector<vector<bool> > GetCells();
+
+		dword GetHeight();
+		dword GetWidth();
 
 	private:
 
+
+		void printMap();
+		bool isCellClear(byte cell);
+		void setObstacle(Map* map, int row, int col, int inflationRadius);
 		void setSize(unsigned int height, unsigned int width);
 		bool isInMapBoundaries(int i, int j);
 };
