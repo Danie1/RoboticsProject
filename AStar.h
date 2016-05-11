@@ -76,8 +76,8 @@ class node
 
 class AStar {
 private:
-	int height;
-	int width;
+	int ySize;
+	int xSize;
 	Map* originMap;
 	vector<vector<int> > closed_nodes_map;
 	vector<vector<int> > open_nodes_map;

@@ -20,17 +20,17 @@ using namespace std;
 AStar::AStar(Map* map)
 {
 	originMap = map;
-	height = map->GetHeight();
-	width = map->GetWidth();
+	ySize = map->GetHeight();
+	xSize = map->GetWidth();
 
-	closed_nodes_map.resize(width);
-	open_nodes_map.resize(width);
-	dir_map.resize(width);
-	for (int i = 0; i<width; i++)
+	closed_nodes_map.resize(xSize);
+	open_nodes_map.resize(xSize);
+	dir_map.resize(xSize);
+	for (int i = 0; i<xSize; i++)
 	{
-		closed_nodes_map[i].resize(height);
-		open_nodes_map[i].resize(height);
-		dir_map[i].resize(height);
+		closed_nodes_map[i].resize(ySize);
+		open_nodes_map[i].resize(ySize);
+		dir_map[i].resize(ySize);
 	}
 
 }
@@ -55,9 +55,9 @@ string AStar::pathFind( const int & xStart, const int & yStart,
     pqi=0;
 
     // reset the node maps
-    for(y=0;y<height;y++)
+    for(y=0;y<ySize;y++)
     {
-        for(x=0;x<width;x++)
+        for(x=0;x<xSize;x++)
         {
             closed_nodes_map[x][y]=0;
             open_nodes_map[x][y]=0;
@@ -113,7 +113,7 @@ string AStar::pathFind( const int & xStart, const int & yStart,
         {
             xdx=x+dx[i]; ydy=y+dy[i];
 
-            if(!(xdx<0 || xdx>width-1 || ydy<0 || ydy>height-1 || !originMap->IsCellClear(xdx,ydy)
+            if(!(xdx<0 || xdx>xSize-1 || ydy<0 || ydy>ySize-1 || !originMap->IsCellClear(ydy,xdx)
                 || closed_nodes_map[xdx][ydy]==1))
             {
                 // generate a child node
