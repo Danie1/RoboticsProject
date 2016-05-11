@@ -9,6 +9,10 @@
 #define ASTAR_H_
 
 #include "Map.h"
+#include <math.h>
+#include <string>
+
+using namespace std;
 
 const int dir=4; // number of possible directions to go at any position
 // if dir==4
@@ -68,11 +72,7 @@ class node
         }
 };
 
-// Determine priority (in the priority queue)
-bool operator<(const node & a, const node & b)
-{
-  return a.getPriority() > b.getPriority();
-}
+
 
 class AStar {
 private:
@@ -82,13 +82,10 @@ private:
 	vector<vector<int> > closed_nodes_map;
 	vector<vector<int> > open_nodes_map;
 	vector<vector<int> > dir_map;
-//	static vector<vector >int closed_nodes_map[n][m]; // map of closed (tried-out) nodes
-//	static int open_nodes_map[n][m]; // map of open (not-yet-tried) nodes
-//	static int dir_map[n][m]; // map of directions
 public:
 	AStar(Map* map);
 
-	string AStar::pathFind( const int & xStart, const int & yStart,
+	string pathFind( const int & xStart, const int & yStart,
 	                 const int & xFinish, const int & yFinish );
 };
 
