@@ -23,16 +23,22 @@ AStar::AStar(Map* map)
 	height = map->GetHeight();
 	width = map->GetWidth();
 
-	closed_nodes_map.resize(height);
-	open_nodes_map.resize(height);
-	dir_map.resize(height);
-	for (int i = 0; i<height; i++)
+	closed_nodes_map.resize(width);
+	open_nodes_map.resize(width);
+	dir_map.resize(width);
+	for (int i = 0; i<width; i++)
 	{
-		closed_nodes_map[i].resize(width);
-		open_nodes_map[i].resize(width);
-		dir_map[i].resize(width);
+		closed_nodes_map[i].resize(height);
+		open_nodes_map[i].resize(height);
+		dir_map[i].resize(height);
 	}
 
+}
+
+// Determine priority (in the priority queue)
+bool operator<(const node & a, const node & b)
+{
+  return a.getPriority() > b.getPriority();
 }
 
 // A-star algorithm.
@@ -62,7 +68,7 @@ string AStar::pathFind( const int & xStart, const int & yStart,
     n0=new node(xStart, yStart, 0, 0);
     n0->updatePriority(xFinish, yFinish);
     pq[pqi].push(*n0);
-    open_nodes_map[x][y]=n0->getPriority(); // mark it on the open nodes map
+    open_nodes_map[xStart][yStart]=n0->getPriority(); // mark it on the open nodes map
 
     // A* search
     while(!pq[pqi].empty())

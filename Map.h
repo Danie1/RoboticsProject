@@ -38,11 +38,11 @@ class Map
 
 		dword GetHeight();
 		dword GetWidth();
+		void printMap();
 
 	private:
 
 
-		void printMap();
 		bool isCellClear(byte cell);
 		void setObstacle(Map* map, int row, int col, int inflationRadius);
 		void setSize(unsigned int height, unsigned int width);

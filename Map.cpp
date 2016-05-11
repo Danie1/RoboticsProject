@@ -180,6 +180,7 @@ bool Map::IsCellClear(dword row, dword col)
 	if (row > m_height || col > m_width)
 	{
 		printf("row or call are out of bounds\n");
+		printf("row = %d, col = %d, m_height = %d, m_width = %d\n", row, col, m_height, m_width);
 		exit(0);
 	}
 	return m_map[row][col];
