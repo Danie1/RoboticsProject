@@ -19,12 +19,12 @@
 const char* PARAMS_FILE_NAME = "parameters.txt";
 
 
-void printMap(int intMap[380][550], int mapWidth, int mapHeight)
+void printMap(int intMap[550][380], int xSize, int ySize)
 {
     // display the map with the route
-    for(int y=0;y<mapWidth;y++)
+    for(int y=0;y<ySize;y++)
     {
-        for(int x=0;x<mapHeight;x++)
+        for(int x=0;x<xSize;x++)
             if((intMap)[x][y]==0)
                 cout<<".";
             else if((intMap)[x][y]==1)
@@ -39,10 +39,10 @@ void printMap(int intMap[380][550], int mapWidth, int mapHeight)
     }
 }
 
-void createIntMap(int intMap[380][550], Map* myMap)
+void createIntMap(int intMap[550][380], Map* myMap)
 {
-	int mapWidth = myMap->GetWidth();
-	int mapHeight = myMap->GetHeight();
+	int xSize = myMap->GetWidth();
+	int ySize = myMap->GetHeight();
 
 //	intMap->resize(mapWidth);
 //	for (int i = 0; i < mapWidth;i++)
@@ -50,19 +50,19 @@ void createIntMap(int intMap[380][550], Map* myMap)
 //		intMap[i].resize(mapHeight);
 //	}
 
-	for (int i = 0; i < mapHeight;i++)
+	for (int x = 0; x < xSize;x++)
 	{
 //		printf(" i = %d\n",i);
-		for (int j = 0; j < mapWidth;j++)
+		for (int y = 0; y < ySize;y++)
 		{
 //			printf(" j = %d\n",j);
-			if (myMap->IsCellClear(i, j) == true)
+			if (myMap->IsCellClear(y, x) == true)
 			{
-				(intMap)[i][j] = 0;
+				(intMap)[x][y] = 0;
 			}
 			else
 			{
-				(intMap)[i][j] = 1;
+				(intMap)[x][y] = 1;
 			}
 		}
 	}
@@ -70,16 +70,16 @@ void createIntMap(int intMap[380][550], Map* myMap)
 
 void displayRoute(string route, Map* myMap, int xStart, int yStart)
 {
-	int map[380][550];
+	int map[550][380];
 //	vector<vector <int> > map;
 
 	createIntMap(map, myMap);
 
 
-	int m = myMap->GetHeight();
-	int n = myMap->GetWidth();
+	int ySize = myMap->GetHeight();
+	int xSize = myMap->GetWidth();
 
-//	printMap(map, n, m);
+//	printMap(map, xSize, ySize);
 
 // follow the route on the map and display it
     if(route.length()>0)
@@ -98,7 +98,7 @@ void displayRoute(string route, Map* myMap, int xStart, int yStart)
         }
         map[x][y]=4;
 
-        printMap(map, n, m);
+        printMap(map, xSize, ySize);
 
 //        // display the map with the route
 //        for(int y=0;y<m;y++)
@@ -125,9 +125,9 @@ int main()
 	char outputMapFileName[MAX_FILE_PATH];
 	double mapResolution;
 	double robotSize;
-	int xStart = 200;
+	int xStart = 104;
 	int xFinish = 270;
-	int yStart = 230;
+	int yStart = 109;
 	int yFinish = 270;
 	if (Utils::getParamsFromFile(PARAMS_FILE_NAME, inputMapFileName, outputMapFileName, &mapResolution, &robotSize) == false)
 	{
