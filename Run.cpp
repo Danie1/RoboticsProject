@@ -19,7 +19,7 @@
 const char* PARAMS_FILE_NAME = "parameters.txt";
 
 
-void printMap(int intMap[550][380], int xSize, int ySize)
+void printMap(vector<vector <int> >& intMap, int xSize, int ySize)
 {
     // display the map with the route
     for(int y=0;y<ySize;y++)
@@ -39,16 +39,16 @@ void printMap(int intMap[550][380], int xSize, int ySize)
     }
 }
 
-void createIntMap(int intMap[550][380], Map* myMap)
+void createIntMap(vector<vector <int> >& intMap, Map* myMap)
 {
 	int xSize = myMap->GetWidth();
 	int ySize = myMap->GetHeight();
 
-//	intMap->resize(mapWidth);
-//	for (int i = 0; i < mapWidth;i++)
-//	{
-//		intMap[i].resize(mapHeight);
-//	}
+	intMap.resize(xSize);
+	for (int i = 0; i < xSize;i++)
+	{
+		intMap[i].resize(ySize);
+	}
 
 	for (int x = 0; x < xSize;x++)
 	{
@@ -70,16 +70,14 @@ void createIntMap(int intMap[550][380], Map* myMap)
 
 void displayRoute(string route, Map* myMap, int xStart, int yStart)
 {
-	int map[550][380];
-//	vector<vector <int> > map;
+	vector<vector <int> > map;
 
 	createIntMap(map, myMap);
-
 
 	int ySize = myMap->GetHeight();
 	int xSize = myMap->GetWidth();
 
-//	printMap(map, xSize, ySize);
+	printMap(map, xSize, ySize);
 
 // follow the route on the map and display it
     if(route.length()>0)
@@ -100,22 +98,6 @@ void displayRoute(string route, Map* myMap, int xStart, int yStart)
 
         printMap(map, xSize, ySize);
 
-//        // display the map with the route
-//        for(int y=0;y<m;y++)
-//        {
-//            for(int x=0;x<n;x++)
-//                if(map[x][y]==0)
-//                    cout<<".";
-//                else if(map[x][y]==1)
-//                    cout<<"O"; //obstacle
-//                else if(map[x][y]==2)
-//                    cout<<"S"; //start
-//                else if(map[x][y]==3)
-//                    cout<<"R"; //route
-//                else if(map[x][y]==4)
-//                    cout<<"F"; //finish
-//            cout<<endl;
-//        }
     }
 }
 
@@ -138,7 +120,7 @@ int main()
 	Map myMap(mapResolution, robotSize);
 	myMap.LoadMap(inputMapFileName);
 	myMap.InflateObstacles();
-	myMap.printMap();
+//	myMap.printMap();
 
 	AStar pathSolver(&myMap);
 	string path = pathSolver.pathFind(xStart, yStart, xFinish, yFinish);
@@ -146,7 +128,6 @@ int main()
 	std:cout << path << endl;
 
 	displayRoute(path, &myMap, xStart, yStart);
-//	printf("%s\n", path);
 
 	// Create Graph from map
 //	Graph myGraph;
