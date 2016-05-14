@@ -70,6 +70,8 @@ string AStar::pathFind( const int & xStart, const int & yStart,
     pq[pqi].push(*n0);
     open_nodes_map[xStart][yStart]=n0->getPriority(); // mark it on the open nodes map
 
+    delete n0;
+
     // A* search
     while(!pq[pqi].empty())
     {
@@ -159,7 +161,7 @@ string AStar::pathFind( const int & xStart, const int & yStart,
                     pqi=1-pqi;
                     pq[pqi].push(*m0); // add the better node instead
                 }
-                else delete m0; // garbage collection
+                delete m0; // garbage collection
             }
         }
         delete n0; // garbage collection
