@@ -10,8 +10,28 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define OBSTACLE_CELL_CHAR 	("*")
 #define CLEAR_CELL_CHAR 	(" ")
+#define OBSTACLE_CELL_CHAR 	("*")
+#define START_CELL_CHAR 	("S")
+#define ROUTE_CELL_CHAR 	("R")
+#define FINISH_CELL_CHAR 	("F")
+const char* CELL_SYMBOLS[eCellState_numOfStates] = {CLEAR_CELL_CHAR,
+												   OBSTACLE_CELL_CHAR,
+												   START_CELL_CHAR,
+												   ROUTE_CELL_CHAR,
+												   FINISH_CELL_CHAR};
+
+const int CLEAR_PIXEL_COLOR[4] = {255,255,255,255};
+const int OBSTACLE_PIXEL_COLOR[4] = {0,0,0,255};
+const int START_PIXEL_COLOR[4] = {0,255,0,255};
+const int ROUTE_PIXEL_COLOR[4] = {255,0,0,255};
+const int FINISH_PIXEL_COLOR[4] = {0,0,255,255};
+
+const int* PIXEL_COLOR[eCellState_numOfStates] = {CLEAR_PIXEL_COLOR,
+												  OBSTACLE_PIXEL_COLOR,
+												  START_PIXEL_COLOR,
+												  ROUTE_PIXEL_COLOR,
+												  FINISH_PIXEL_COLOR};
 
 Map::Map(double mapResolution, double robotSize) : m_width(0),
 												   m_height(0),
@@ -35,14 +55,7 @@ void Map::printMap()
 	{
 		for (dword col = 0; col < m_width; col++)
 		{
-			if (m_map[row][col] == false)
-			{
-				printf(OBSTACLE_CELL_CHAR);
-			}
-			else
-			{
-				printf(CLEAR_CELL_CHAR);
-			}
+			printf("%s",CELL_SYMBOLS[m_map[row][col]]);
 		}
 		printf("\n");
 	}
@@ -63,7 +76,7 @@ void Map::LoadMap(const char* mapFileName)
 	{
 		for (dword col = 0; col < m_width; col++)
 		{
-			m_map[row][col] = isCellClear(m_pixels[pixelIter]);
+			m_map[row][col] = isCellClear(m_pixels[pixelIter]) ? eCellState_clear : eCellState_obstacle;
 
 			pixelIter+= 4;
 		}
@@ -84,7 +97,7 @@ void Map::InflateObstacles()
 	{
 		for (dword col = 0; col < m_width; col++)
 		{
-			if (m_map[row][col] == false)
+			if (m_map[row][col] == eCellState_obstacle)
 			{
 				setObstacle(&tempMap, row, col, inflationRadius);
 			}
@@ -98,14 +111,14 @@ void Map::InflateObstacles()
 
 void Map::setObstacle(Map* map, int row, int col, int inflationRadius)
 {
-	map->m_map[row][col] = false;
+	map->m_map[row][col] = eCellState_obstacle;
 	for (int i = row - inflationRadius; i <= row + inflationRadius; i++)
 	{
 		for (int j = col - inflationRadius; j <= col + inflationRadius; j++)
 		{
 			if (isInMapBoundaries(i, j) == true)
 			{
-				map->m_map[i][j] = false;
+				map->m_map[i][j] = eCellState_obstacle;
 			}
 		}
 	}
@@ -122,20 +135,7 @@ void Map::SaveMap(const char* mapFileName)
 	{
 		for (dword j = 0; j < m_width; ++j)
 		{
-			if (m_map[i][j] == true)
-			{
-				pixels_new[pixelsIter++] = 255;
-				pixels_new[pixelsIter++] = 255;
-				pixels_new[pixelsIter++] = 255;
-				pixels_new[pixelsIter++] = 255;
-			}
-			else
-			{
-				pixels_new[pixelsIter++] = 0;
-				pixels_new[pixelsIter++] = 0;
-				pixels_new[pixelsIter++] = 0;
-				pixels_new[pixelsIter++] = 0;
-			}
+			colorCell(pixels_new, i, j, &pixelsIter);
 		}
 
 	}
@@ -156,7 +156,7 @@ void Map::setSize(unsigned int height, unsigned int width)
 	m_map.resize(m_height);
 	for (dword i = 0; i<m_height; i++)
 	{
-		m_map[i].resize(m_width, true);
+		m_map[i].resize(m_width, eCellState_clear);
 	}
 }
 
@@ -183,5 +183,25 @@ bool Map::IsCellClear(dword row, dword col)
 		printf("row = %d, col = %d, m_height = %d, m_width = %d\n", row, col, m_height, m_width);
 		exit(0);
 	}
-	return m_map[row][col];
+	return m_map[row][col] == eCellState_clear;
+}
+
+void Map::SetRouteToMap(vector<vector<int> >& intMap)
+{
+	for (dword row = 0; row < m_height; ++row)
+	{
+		for (dword col = 0; col < m_width; ++col)
+		{
+			m_map[row][col] = ECellState(intMap[col][row]);
+		}
+	}
+}
+
+void Map::colorCell(vector<unsigned char>& pixels_new, int row, int col, int* pixelsIter)
+{
+
+	pixels_new[(*pixelsIter)++] = PIXEL_COLOR[m_map[row][col]][0];
+	pixels_new[(*pixelsIter)++] = PIXEL_COLOR[m_map[row][col]][1];
+	pixels_new[(*pixelsIter)++] = PIXEL_COLOR[m_map[row][col]][2];
+	pixels_new[(*pixelsIter)++] = PIXEL_COLOR[m_map[row][col]][3];
 }

@@ -74,10 +74,10 @@ void displayRoute(string route, Map* myMap, int xStart, int yStart)
 
 	createIntMap(map, myMap);
 
-	int ySize = myMap->GetHeight();
-	int xSize = myMap->GetWidth();
 
-	printMap(map, xSize, ySize);
+//	int ySize = myMap->GetHeight();
+//	int xSize = myMap->GetWidth();
+//	printMap(map, xSize, ySize);
 
 // follow the route on the map and display it
     if(route.length()>0)
@@ -96,9 +96,11 @@ void displayRoute(string route, Map* myMap, int xStart, int yStart)
         }
         map[x][y]=4;
 
-        printMap(map, xSize, ySize);
+//        printMap(map, xSize, ySize);
 
     }
+
+    myMap->SetRouteToMap(map);
 }
 
 int main()
@@ -125,7 +127,7 @@ int main()
 	AStar pathSolver(&myMap);
 	string path = pathSolver.pathFind(xStart, yStart, xFinish, yFinish);
 
-	std:cout << path << endl;
+	cout << path << endl;
 
 	displayRoute(path, &myMap, xStart, yStart);
 
