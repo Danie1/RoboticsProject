@@ -52,10 +52,8 @@ void createIntMap(vector<vector <int> >& intMap, Map* myMap)
 
 	for (int x = 0; x < xSize;x++)
 	{
-//		printf(" i = %d\n",i);
 		for (int y = 0; y < ySize;y++)
 		{
-//			printf(" j = %d\n",j);
 			if (myMap->IsCellClear(y, x) == true)
 			{
 				(intMap)[x][y] = 0;
@@ -74,12 +72,7 @@ void displayRoute(string route, Map* myMap, int xStart, int yStart)
 
 	createIntMap(map, myMap);
 
-
-//	int ySize = myMap->GetHeight();
-//	int xSize = myMap->GetWidth();
-//	printMap(map, xSize, ySize);
-
-// follow the route on the map and display it
+	// follow the route on the map and display it
     if(route.length()>0)
     {
         int j; char c;
@@ -95,9 +88,6 @@ void displayRoute(string route, Map* myMap, int xStart, int yStart)
             map[x][y]=3;
         }
         map[x][y]=4;
-
-//        printMap(map, xSize, ySize);
-
     }
 
     myMap->SetRouteToMap(map);
