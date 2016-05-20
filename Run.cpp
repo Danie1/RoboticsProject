@@ -146,11 +146,11 @@ int main()
 
 	graph.SaveToFile(outputMapFileName);
 
-	Map newMap(mapResolution, robotSize);
+	Map EnlargedMap(mapResolution, robotSize);
 
-	graph.ConvertToMap(newMap);
+	graph.ConvertToMap(EnlargedMap);
 
-	newMap.SaveToFile("CoolMap.png");
+	EnlargedMap.SaveToFile("EnlargedMap.png");
 
 	printf("FINISH!!!\n");
 
