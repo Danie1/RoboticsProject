@@ -8,9 +8,10 @@
 #ifndef ASTAR_H_
 #define ASTAR_H_
 
-#include "Map.h"
+#include "CellMatrix.h"
 #include <math.h>
 #include <string>
+#include <deque>
 
 using namespace std;
 
@@ -78,14 +79,14 @@ class AStar {
 private:
 	int ySize;
 	int xSize;
-	Map* originMap;
+	CellMatrix* originMap;
 	vector<vector<int> > closed_nodes_map;
 	vector<vector<int> > open_nodes_map;
 	vector<vector<int> > dir_map;
 public:
-	AStar(Map* map);
+	AStar(CellMatrix* map);
 
-	string pathFind( const int & xStart, const int & yStart,
+	deque<int> pathFind( const int & xStart, const int & yStart,
 	                 const int & xFinish, const int & yFinish );
 };
 

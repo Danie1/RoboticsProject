@@ -13,6 +13,14 @@ typedef unsigned short word;
 typedef unsigned int dword;
 typedef unsigned long long int qword;
 
-#define NULL 0
+enum ECellState
+{
+	eCellState_clear,
+	eCellState_obstacle,
+	eCellState_start,
+	eCellState_route,
+	eCellState_finish,
+	eCellState_numOfStates
+};
 
 #endif /* TYPEDEFS_H_ */
