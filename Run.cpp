@@ -91,7 +91,7 @@ void displayRoute(deque<int> route, Graph* myMap, int xStart, int yStart)
         {
         	j = route.at(i);
 
-            if (j < 0 || j > 3)
+            if (j < 0 || j >= dir)
             {
             	printf("Error in displaying route! - Got %d \r\n", j);
             	continue;
