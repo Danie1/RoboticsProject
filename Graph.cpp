@@ -1,6 +1,8 @@
 #include "Graph.h"
 #include <chrono>
 #include <functional>
+#include <stdio.h>
+#include <stdlib.h>
 
 using namespace std::chrono;
 
