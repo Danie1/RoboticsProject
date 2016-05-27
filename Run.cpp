@@ -180,11 +180,11 @@ int main()
 
 	EnlargedMap.SaveToFile("EnlargedMap.png");
 
-	Robot robot("localhost", 6665);
-	robot.setOdometry(2, -3, 0);
-	Driver driver(&robot);
+	//Robot robot("localhost", 6665);
+	//robot.setOdometry(2, -3, 0);
+	//Driver driver(&robot);
 
-	driver.moveToNextWaypoint(3, -3);
+	//driver.moveToNextWaypoint(3, -3);
 
 
 	printf("FINISH!!!\n");
