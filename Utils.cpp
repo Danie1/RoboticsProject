@@ -9,7 +9,6 @@
 
 #include <stdlib.h>
 #include <iostream>
-
 #include <fstream>
 using std::ifstream;
 
@@ -18,16 +17,20 @@ using std::ifstream;
 using namespace std;
 
 
-#define INPUT_MAP_PARAM ("inMap:")
-#define OUTPUT_MAP_PARAM ("outMap:")
-#define ROBOT_SIZE_PARAM ("robotSizeM:")
-#define MAP_RESO_PARAM ("MapResolutionM:")
+#define INPUT_MAP_PARAM ("map:")
+#define START_LOCATION_PARAM ("startLocation:")
+#define GOAL_LOCATION_PARAM ("goal:")
+#define ROBOT_SIZE_PARAM ("robotSize:")
+#define MAP_RESO_PARAM ("MapResolutionCM:")
+#define GRID_RESO_PARAM ("GridResolutionCM:")
 
 bool Utils::getParamsFromFile(const char* paramsFileName,
 							  char* o_inputMapFileName,
-							  char* o_outputMapFileName,
-							  double* o_mapResolution,
-							  double* o_robotSize)
+							  Location& StartLocation,
+							  Point& EndPoint,
+							  int& o_robotSize,
+							  double& o_mapResolution,
+							  double& o_gridResolution)
 {
 	const int MAX_CHARS_PER_LINE = 512;
 	const int MAX_TOKENS_PER_LINE = 20;
@@ -72,17 +75,25 @@ bool Utils::getParamsFromFile(const char* paramsFileName,
 			{
 				strcpy(o_inputMapFileName, token[1]);
 			}
-			else if (strcmp(token[0], OUTPUT_MAP_PARAM) == 0)
+			else if (strcmp(token[0], START_LOCATION_PARAM) == 0)
 			{
-				strcpy(o_outputMapFileName, token[1]);
+				StartLocation = Location(atoi(token[1]), atoi(token[2]), atoi(token[3]));
+			}
+			else if (strcmp(token[0], GOAL_LOCATION_PARAM) == 0)
+			{
+				EndPoint = Point(atoi(token[1]), atoi(token[2]));
 			}
 			else if (strcmp(token[0], ROBOT_SIZE_PARAM) == 0)
 			{
-				*o_robotSize = atof(token[1]);
+				o_robotSize = atoi(token[1]);
 			}
 			else if (strcmp(token[0], MAP_RESO_PARAM) == 0)
 			{
-				*o_mapResolution = atof(token[1]);
+				o_mapResolution = atof(token[1]);
+			}
+			else if (strcmp(token[0], GRID_RESO_PARAM) == 0)
+			{
+				o_gridResolution = atof(token[1]);
 			}
 			else
 			{
