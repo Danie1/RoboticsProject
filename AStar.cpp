@@ -45,7 +45,7 @@ string DequeToStr(deque<int> q)
 {
     string s;
     deque<int> v = q;
-    for (int i = 0; i<v.size(); i++)
+    for (dword i = 0; i<v.size(); i++)
     {
         char c = '0' + v.at(i);
         s = c + s;

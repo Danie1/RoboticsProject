@@ -45,8 +45,10 @@ void CellMatrix::CopyMatrix(CellMatrix &matrix)
 
 void CellMatrix::SetCell(int row, int col, ECellState eType)
 {
-	if (row < m_height && row > 0 && col < m_width && col > 0)
+	if (row < m_height && row >= 0 && col < m_width && col >= 0)
 		m_matrix[row][col] = eType;
+	else
+		printf("Tried to set a cell that doesn't exist! - (%d, %d) \r\n", row, col);
 }
 
 ECellState CellMatrix::GetCell(int row, int col)

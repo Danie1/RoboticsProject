@@ -9,6 +9,7 @@
 
 #include "CellMatrix.h"
 #include "Map.h"
+#include "CommonStructs.h"
 
 class Graph : public CellMatrix
 {
@@ -20,9 +21,15 @@ private:
 public:
 	Graph(Map& map, int Ratio);
 
-	void SetOriginalCell(int row, int col, ECellState eType);
-	ECellState GetOriginalCell(int row, int col);
+	void SetOriginalCell(dword row, dword col, ECellState eType);
+	ECellState GetOriginalCell(dword row, dword col);
 	bool IsOriginalCellClear(dword row, dword col);
+
+	/**
+	 * This method returns the point on the graph according to it's
+	 * original position on the map.
+	 */
+	Point MapToGraphPoint(Point PointOnMap);
 
 	void ConvertToMap(Map& map);
 
