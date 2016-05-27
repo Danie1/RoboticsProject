@@ -8,19 +8,20 @@
 #ifndef ASTAR_H_
 #define ASTAR_H_
 
-#include "Map.h"
+#include "CellMatrix.h"
 #include <math.h>
 #include <string>
+#include <deque>
 
 using namespace std;
 
-const int dir=4; // number of possible directions to go at any position
+const int dir=8; // number of possible directions to go at any position
 // if dir==4
-static int dx[dir]={1, 0, -1, 0};
-static int dy[dir]={0, 1, 0, -1};
+//static int dx[dir]={1, 0, -1, 0};
+//static int dy[dir]={0, 1, 0, -1};
 // if dir==8
-//static int dx[dir]={1, 1, 0, -1, -1, -1, 0, 1};
-//static int dy[dir]={0, 1, 1, 1, 0, -1, -1, -1};
+static int dx[dir]={1, 1, 0, -1, -1, -1, 0, 1};
+static int dy[dir]={0, 1, 1, 1, 0, -1, -1, -1};
 
 class node
 {
@@ -78,14 +79,14 @@ class AStar {
 private:
 	int ySize;
 	int xSize;
-	Map* originMap;
+	CellMatrix* originMap;
 	vector<vector<int> > closed_nodes_map;
 	vector<vector<int> > open_nodes_map;
 	vector<vector<int> > dir_map;
 public:
-	AStar(Map* map);
+	AStar(CellMatrix* map);
 
-	string pathFind( const int & xStart, const int & yStart,
+	deque<int> pathFind( const int & xStart, const int & yStart,
 	                 const int & xFinish, const int & yFinish );
 };
 

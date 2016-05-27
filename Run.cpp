@@ -5,12 +5,13 @@
  *      Author: Or Gafni and Daniel Saad
  */
 #include "Map.h"
+#include "Graph.h"
 #include <stdlib.h>
 #include "stdio.h"
 #include "Utils.h"
-#include "Graph.h"
 #include "AStar.h"
 #include <string>
+#include <deque>
 #include <iostream>
 
 
@@ -39,7 +40,7 @@ void printMap(vector<vector <int> >& intMap, int xSize, int ySize)
     }
 }
 
-void createIntMap(vector<vector <int> >& intMap, Map* myMap)
+void createIntMap(vector<vector <int> >& intMap, CellMatrix* myMap)
 {
 	int xSize = myMap->GetWidth();
 	int ySize = myMap->GetHeight();
@@ -68,7 +69,7 @@ void createIntMap(vector<vector <int> >& intMap, Map* myMap)
 	}
 }
 
-void displayRoute(string route, Map* myMap, int xStart, int yStart)
+void displayRoute(deque<int> route, Graph* myMap, int xStart, int yStart)
 {
 	vector<vector <int> > map;
 
@@ -80,16 +81,22 @@ void displayRoute(string route, Map* myMap, int xStart, int yStart)
 //	printMap(map, xSize, ySize);
 
 // follow the route on the map and display it
-    if(route.length()>0)
+    if(route.size()>0)
     {
         int j; char c;
         int x=xStart;
         int y=yStart;
         map[x][y]=2;
-        for(int i=0;i<route.length();i++)
+        for(int i=route.size() - 1;i>=0;i--)
         {
-            c =route.at(i);
-            j=atoi(&c);
+        	j = route.at(i);
+
+            if (j < 0 || j >= dir)
+            {
+            	printf("Error in displaying route! - Got %d \r\n", j);
+            	continue;
+            }
+
             x=x+dx[j];
             y=y+dy[j];
             map[x][y]=3;
@@ -100,44 +107,52 @@ void displayRoute(string route, Map* myMap, int xStart, int yStart)
 
     }
 
-    myMap->SetRouteToMap(map);
+    myMap->SetRouteOnGraph(map);
 }
 
 int main()
 {
+	const dword MAP_TO_GRAPH_RATIO = 4;
+
 	char inputMapFileName[MAX_FILE_PATH];
 	char outputMapFileName[MAX_FILE_PATH];
 	double mapResolution;
 	double robotSize;
-	int xStart = 104;
-	int xFinish = 270;
-	int yStart = 109;
-	int yFinish = 270;
+	deque<int> path;
+	dword xStart, xFinish, yStart, yFinish = 0;
+
 	if (Utils::getParamsFromFile(PARAMS_FILE_NAME, inputMapFileName, outputMapFileName, &mapResolution, &robotSize) == false)
 	{
 		printf("failed to get params\n");
 		exit(-1);
 	}
-
 	Map myMap(mapResolution, robotSize);
-	myMap.LoadMap(inputMapFileName);
-	myMap.InflateObstacles();
-//	myMap.printMap();
 
-	AStar pathSolver(&myMap);
-	string path = pathSolver.pathFind(xStart, yStart, xFinish, yFinish);
+	myMap.LoadFromFile(inputMapFileName);
+	myMap.InflateObstacles_Map();
 
-	cout << path << endl;
+	Graph graph = Graph(myMap, MAP_TO_GRAPH_RATIO);
 
-	displayRoute(path, &myMap, xStart, yStart);
+	do {
+		bool fSuccess = graph.GetRandomStartAndFinishPoints(xStart, yStart, xFinish, yFinish);
 
-	// Create Graph from map
-//	Graph myGraph;
-//	myGraph.BuildGraphFromMap(myMap);
+		AStar pathSolver(&graph);
+		path = pathSolver.pathFind(xStart, yStart, xFinish, yFinish);
+	} while (path.empty());
 
-	myMap.SaveMap(outputMapFileName);
+	//cout << path << endl;
+	displayRoute(path, &graph, xStart, yStart);
 
-	printf("FINSIH!!!\n");
+
+	graph.SaveToFile(outputMapFileName);
+
+	Map newMap(mapResolution, robotSize);
+
+	graph.ConvertToMap(newMap);
+
+	newMap.SaveToFile("CoolMap.png");
+
+	printf("FINISH!!!\n");
 
 	return 0;
 }

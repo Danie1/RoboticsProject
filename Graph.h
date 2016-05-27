@@ -1,35 +1,37 @@
 /*
- * Graph.h
+ * Map.h
  *
- *  Created on: Mar 29, 2016
- *      Author: Or Gafni
+ *  Created on: Mar 22, 2016
+ *      Author: Or Gafni and Daniel Saad
  */
-
 #ifndef GRAPH_H_
 #define GRAPH_H_
 
-#include "Node.h"
+#include "CellMatrix.h"
 #include "Map.h"
 
-#include <vector>
-
-using namespace std;
-
-class Graph {
+class Graph : public CellMatrix
+{
 private:
-	vector<vector<Node*> > m_nodes;
-	int height;
-	int width;
+	dword m_ratio;
+
+	void FromMapToGraph(Map& map, dword ratio);
 
 public:
-	Graph();
-	virtual ~Graph();
+	Graph(Map& map, int Ratio);
 
-	void BuildGraphFromMap(Map &map);
+	void SetOriginalCell(int row, int col, ECellState eType);
+	ECellState GetOriginalCell(int row, int col);
+	bool IsOriginalCellClear(dword row, dword col);
 
-private:
-	void setAllNeigbors(int rowIndex, int colIndex);
-	void printGraph();
+	void ConvertToMap(Map& map);
+
+	void SetRouteOnGraph(vector<vector<int> >& intMap);
+
+	int GetGraphRatio() { return m_ratio; }
+
+	bool GetRandomStartAndFinishPoints(dword& xStart, dword& yStart, dword& xFinish, dword& yFinish);
+
 };
 
-#endif /* GRAPH_H_ */
+#endif

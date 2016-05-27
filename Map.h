@@ -8,60 +8,38 @@
 #ifndef MAP_H_
 #define MAP_H_
 
+#include <functional>
 
-#include <vector>
-using namespace std;
+#include "CellMatrix.h"
 
-#include "typedefs.h"
-
-enum ECellState
-{
-	eCellState_clear,
-	eCellState_obstacle,
-	eCellState_start,
-	eCellState_route,
-	eCellState_finish,
-
-	eCellState_numOfStates
-};
-
-class Map
+class Map : public CellMatrix
 {
 	private:
-		dword m_width;
-		dword m_height;
-		vector<vector<ECellState> > m_map;
-		vector<byte> m_pixels;
 		double m_mapResolution; // pixels in map per meter
 		double m_robotSize;
 
 
 	public:
 		Map(double mapResolution, double robotSize);
+		Map(Map &map);
 		virtual ~Map();
 
+		double GetResolution() {return m_mapResolution;}
+		double GetRobotSize() {return m_robotSize;}
+
 		void LoadMap(const char* mapFileName);
-		void InflateObstacles();
 		void SaveMap(const char* mapFileName);
-		bool IsCellClear(dword row, dword col);
 
-		vector<vector<bool> > GetCells();
-
+		void InflateObstacles_Map();
+		void InflateMap(Map& new_map, int ratio);
+		
 		void SetRouteToMap(vector<vector<int> >& intMap);
-
-		dword GetHeight();
-		dword GetWidth();
-		void printMap();
-
+		
 	private:
 
-
-		bool isCellClear(byte cell);
-		void setObstacle(Map* map, int row, int col, int inflationRadius);
-		void setSize(unsigned int height, unsigned int width);
+		bool IsThereAnObstacle(int beg_row, int beg_col, int end_row, int end_col);
+		void InflateObstacles_Cell(Map& map, int row, int col, int inflationRadius);
 		bool isInMapBoundaries(int i, int j);
-
-		void colorCell(vector<unsigned char>& pixels_new, int row, int col, int* pixelsIter);
 };
 
 #endif /* MAP_H_ */

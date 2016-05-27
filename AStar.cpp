@@ -17,7 +17,7 @@
 using namespace std;
 
 
-AStar::AStar(Map* map)
+AStar::AStar(CellMatrix* map)
 {
 	originMap = map;
 	ySize = map->GetHeight();
@@ -41,9 +41,22 @@ bool operator<(const node & a, const node & b)
   return a.getPriority() > b.getPriority();
 }
 
+string DequeToStr(deque<int> q)
+{
+    string s;
+    deque<int> v = q;
+    for (int i = 0; i<v.size(); i++)
+    {
+        char c = '0' + v.at(i);
+        s = c + s;
+    }
+
+    return s;
+}
+
 // A-star algorithm.
 // The route returned is a string of direction digits.
-string AStar::pathFind( const int & xStart, const int & yStart,
+deque<int> AStar::pathFind( const int & xStart, const int & yStart,
                  const int & xFinish, const int & yFinish )
 {
     static priority_queue<node> pq[2]; // list of open (not-yet-tried) nodes
@@ -53,6 +66,15 @@ string AStar::pathFind( const int & xStart, const int & yStart,
     static int i, j, x, y, xdx, ydy;
     static char c;
     pqi=0;
+
+    // Validate that both start and finish aren't obstacles.
+    /*
+    if (!originMap->IsCellClear(xStart, yStart) || !originMap->IsCellClear(xFinish, yFinish))
+    {
+        printf("Start type cell is: %d and finish: %d \r\n", originMap->GetCell(xStart, yStart), originMap->GetCell(xFinish, yFinish));
+        return deque<int>();
+    }
+    */
 
     // reset the node maps
     for(y=0;y<ySize;y++)
@@ -93,12 +115,12 @@ string AStar::pathFind( const int & xStart, const int & yStart,
         {
             // generate the path from finish to start
             // by following the directions
-            string path="";
+            deque<int> path;
             while(!(x==xStart && y==yStart))
             {
                 j=dir_map[x][y];
-                c='0'+(j+dir/2)%dir;
-                path=c+path;
+                c=(j+dir/2)%dir;
+                path.push_back(c);
                 x+=dx[j];
                 y+=dy[j];
             }
@@ -166,6 +188,6 @@ string AStar::pathFind( const int & xStart, const int & yStart,
         }
         delete n0; // garbage collection
     }
-    return ""; // no route found
+    return deque<int>(); // no route found
 }
 
