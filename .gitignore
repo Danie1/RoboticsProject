@@ -1,2 +1,6 @@
 *Debug*
 *.out
+/.cproject
+/.project
+/.meta*
+RemoteSystemsTempFiles/

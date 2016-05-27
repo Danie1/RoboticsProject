@@ -8,13 +8,17 @@
 #ifndef UTILS_H_
 #define UTILS_H_
 
+#include "CommonStructs.h"
+
 class Utils {
 public:
 	static bool getParamsFromFile(const char* paramsFileName,
 								  char* o_inputMapFileName,
-								  char* o_outputMapFileName,
-								  double* o_mapResolution,
-								  double* o_robotSize);
+								  Location& StartLocation,
+								  Point& EndPoint,
+								  int& o_robotSize,
+								  double& o_mapResolution,
+								  double& o_gridResolution);
 };
 
 #endif /* UTILS_H_ */

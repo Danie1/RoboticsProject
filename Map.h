@@ -8,38 +8,37 @@
 #ifndef MAP_H_
 #define MAP_H_
 
+#include <functional>
 
-#include <vector>
-using namespace std;
+#include "CellMatrix.h"
 
-#include "typedefs.h"
-
-class Map
+class Map : public CellMatrix
 {
 	private:
-		dword m_width;
-		dword m_height;
-		vector<vector<bool> > m_map;
-		vector<byte> m_pixels;
 		double m_mapResolution; // pixels in map per meter
 		double m_robotSize;
 
 
-		void printMap();
-		bool IsCellClear(byte cell);
-		void setObstacle(Map* map, int row, int col, int inflationRadius);
-
 	public:
 		Map(double mapResolution, double robotSize);
+		Map(Map &map);
 		virtual ~Map();
 
+		double GetResolution() {return m_mapResolution;}
+		double GetRobotSize() {return m_robotSize;}
+
 		void LoadMap(const char* mapFileName);
-		void InflateObstacles();
 		void SaveMap(const char* mapFileName);
 
+		void InflateObstacles_Map();
+		void InflateMap(Map& new_map, int ratio);
+		
+		void SetRouteToMap(vector<vector<int> >& intMap);
+		
 	private:
 
-		void setSize(unsigned int height, unsigned int width);
+		bool IsThereAnObstacle(int beg_row, int beg_col, int end_row, int end_col);
+		void InflateObstacles_Cell(Map& map, int row, int col, int inflationRadius);
 		bool isInMapBoundaries(int i, int j);
 };
 
