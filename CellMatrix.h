@@ -22,11 +22,13 @@ private:
 	vector<vector<ECellState> > m_matrix;
 public:
 	CellMatrix();
-	~CellMatrix();
+	virtual ~CellMatrix();
 
 	virtual void SetCell(int row, int col, ECellState eType);
 	virtual ECellState GetCell(int row, int col);
 	virtual bool IsCellClear(dword row, dword col);
+
+	virtual bool IsNearObstacle(dword row, dword col);
 
 	void Resize(unsigned int height, unsigned int width);
 	void CopyMatrix(CellMatrix &matrix);

@@ -48,9 +48,14 @@ class node
         }
 
         // give better priority to going strait instead of diagonally
-        void nextLevel(const int & i) // i: direction
+        void nextLevel(const int & i, bool isNearObstacle) // i: direction
         {
              level+=(dir==8?(i%2==0?10:14):10);
+
+             if (isNearObstacle)
+             {
+            	 level += 5;
+             }
         }
 
         // Estimation function for the remaining distance to the goal.

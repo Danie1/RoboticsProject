@@ -89,6 +89,23 @@ bool CellMatrix::IsCellClear(dword row, dword col)
 	return m_matrix[row][col] == eCellState_clear;
 }
 
+bool CellMatrix::IsNearObstacle(dword row, dword col)
+{
+	for (int i = row - 1; i <= row + 1; i++)
+	{
+		for (int j = col - 1; j <= col + 1; j++)
+		{
+			if ((i < m_height && i >= 0 && j < m_width && j >= 0) &&
+				(m_matrix[i][j] == eCellState_obstacle))
+			{
+				return true;
+			}
+		}
+	}
+
+	return false;
+}
+
 void CellMatrix::LoadFromFile(const char* mapFileName)
 {
 	auto IsCellColorClear = [](byte cellVal) {return cellVal == 255;};
