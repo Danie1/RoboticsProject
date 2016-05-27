@@ -13,11 +13,14 @@
 #include <string>
 #include <deque>
 #include <iostream>
-
-
+#include "Robot.h"
+#include "Driver.h"
+#include "CommonStructs.h"
 
 #define MAX_FILE_PATH (30)
 const char* PARAMS_FILE_NAME = "parameters.txt";
+
+
 
 
 void printMap(vector<vector <int> >& intMap, int xSize, int ySize)
@@ -83,7 +86,7 @@ void displayRoute(deque<int> route, Graph* myMap, int xStart, int yStart)
 // follow the route on the map and display it
     if(route.size()>0)
     {
-        int j; char c;
+        int j;
         int x=xStart;
         int y=yStart;
         map[x][y]=2;
@@ -115,13 +118,22 @@ int main()
 	const dword MAP_TO_GRAPH_RATIO = 4;
 
 	char inputMapFileName[MAX_FILE_PATH];
-	char outputMapFileName[MAX_FILE_PATH];
 	double mapResolution;
-	double robotSize;
-	deque<int> path;
-	dword xStart, xFinish, yStart, yFinish = 0;
+	double gridResolution;
+	int robotSize;
 
-	if (Utils::getParamsFromFile(PARAMS_FILE_NAME, inputMapFileName, outputMapFileName, &mapResolution, &robotSize) == false)
+	deque<int> path;
+	Location StartLocation(0,0,0);
+	Point    EndPoint(0,0);
+	int xStart, yStart, yawStart, xFinish, yFinish = 0;
+
+	if (Utils::getParamsFromFile(PARAMS_FILE_NAME, // Parameters.txt
+								inputMapFileName, // Where the map file image is
+								StartLocation, // Where the robot starts
+								EndPoint, // Where the robot finishes
+								robotSize, // The robot size. We assume its a square atm
+								mapResolution, // The map resolution
+								gridResolution) == false) // The grid resolution
 	{
 		printf("failed to get params\n");
 		exit(-1);
@@ -133,24 +145,47 @@ int main()
 
 	Graph graph = Graph(myMap, MAP_TO_GRAPH_RATIO);
 
+	Point StartPointOnGraph = graph.MapToGraphPoint(StartLocation);
+	Point FinishPointOnGraph = graph.MapToGraphPoint(EndPoint);
+
 	do {
-		bool fSuccess = graph.GetRandomStartAndFinishPoints(xStart, yStart, xFinish, yFinish);
+		//bool fSuccess = graph.GetRandomStartAndFinishPoints(xStart, yStart, xFinish, yFinish);
+
+
 
 		AStar pathSolver(&graph);
-		path = pathSolver.pathFind(xStart, yStart, xFinish, yFinish);
-	} while (path.empty());
+		path = pathSolver.pathFind(StartPointOnGraph.GetX(), StartPointOnGraph.GetY(),
+								   FinishPointOnGraph.GetX(), FinishPointOnGraph.GetY());
 
-	//cout << path << endl;
-	displayRoute(path, &graph, xStart, yStart);
+		if (!path.empty()){
+			cout << "Found a path to destination." << endl;
+		}
+		else
+		{
+			cout << "No path to destination." << endl;
+			return -1;
+		}
+
+	} while (false);//path.empty());
 
 
-	graph.SaveToFile(outputMapFileName);
+	displayRoute(path, &graph, StartPointOnGraph.GetX(), StartPointOnGraph.GetY());
+
+
+	graph.SaveToFile("RouteGraph.png");
 
 	Map EnlargedMap(mapResolution, robotSize);
 
 	graph.ConvertToMap(EnlargedMap);
 
 	EnlargedMap.SaveToFile("EnlargedMap.png");
+
+	Robot robot("localhost", 6665);
+	robot.setOdometry(2, -3, 0);
+	Driver driver(&robot);
+
+	driver.moveToNextWaypoint(3, -3);
+
 
 	printf("FINISH!!!\n");
 

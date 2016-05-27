@@ -1,5 +1,6 @@
-inMap: roboticLabMap.png
-outMap: roboticLabMapOUT.png
-robotSizeM: 0.3
-MapResolutionM: 0.025
-
+map: roboticLabMap.png
+startLocation: 362 305 20
+goal: 169 138
+robotSize: 30 30
+MapResolutionCM: 2.5
+GridResolutionCM: 10

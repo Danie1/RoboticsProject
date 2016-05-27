@@ -38,10 +38,10 @@ public:
 	void SaveToFile(const char* mapFileName);
 
 	template<typename Lambda>
-	bool ActionInSubMatrix(int beg_row, int beg_col, int end_row, int end_col, Lambda ActionFunc, bool fQuitOnFailure = false)
+	bool ActionInSubMatrix(dword beg_row, dword beg_col, dword end_row, dword end_col, Lambda ActionFunc, bool fQuitOnFailure = false)
 	{
-		auto lValidateRow = [&](int row) {return row > GetHeight() || row < 0;};
-		auto lValidateCol = [&](int col) {return col > GetWidth() || col < 0;};
+		auto lValidateRow = [&](dword row) {return row > GetHeight() || row < 0;};
+		auto lValidateCol = [&](dword col) {return col > GetWidth() || col < 0;};
 
 		if (lValidateRow(beg_row) || lValidateRow(end_row) || lValidateCol(beg_col) || lValidateCol(end_col))
 		{

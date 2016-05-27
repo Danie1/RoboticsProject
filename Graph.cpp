@@ -11,6 +11,11 @@ Graph::Graph(Map& map, int Ratio) : m_ratio(Ratio)
 	FromMapToGraph(map, Ratio);
 }
 
+Point Graph::MapToGraphPoint(Point PointOnMap)
+{
+	return Point(PointOnMap.GetX() / m_ratio, PointOnMap.GetY() / m_ratio);
+}
+
 void Graph::FromMapToGraph(Map& map, dword ratio)
 {
 	/**
@@ -118,13 +123,13 @@ void Graph::ConvertToMap(Map& map)
 }
 
 
-void Graph::SetOriginalCell(int row, int col, ECellState eType)
+void Graph::SetOriginalCell(dword row, dword col, ECellState eType)
 {
 	if (row < GetHeight() && row > 0 && col < GetWidth() && col > 0)
 		CellMatrix::SetCell(row / m_ratio, col / m_ratio,  eType);
 }
 
-ECellState Graph::GetOriginalCell(int row, int col)
+ECellState Graph::GetOriginalCell(dword row, dword col)
 {
 	return CellMatrix::GetCell(row / m_ratio, col / m_ratio);
 }
@@ -181,4 +186,6 @@ bool Graph::GetRandomStartAndFinishPoints(dword& xStart, dword& yStart, dword& x
 	yFinish = FreeCell.at(randNum).second;
 
 	printf("Start: (%d, %d) || Finish: (%d, %d) \r\n", xStart, yStart, xFinish, yFinish);
+
+	return true;
 }
