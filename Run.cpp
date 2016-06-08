@@ -20,29 +20,6 @@
 #define MAX_FILE_PATH (30)
 const char* PARAMS_FILE_NAME = "parameters.txt";
 
-
-
-
-void printMap(vector<vector <int> >& intMap, int xSize, int ySize)
-{
-    // display the map with the route
-    for(int y=0;y<ySize;y++)
-    {
-        for(int x=0;x<xSize;x++)
-            if((intMap)[x][y]==0)
-                cout<<".";
-            else if((intMap)[x][y]==1)
-                cout<<"O"; //obstacle
-            else if((intMap)[x][y]==2)
-                cout<<"S"; //start
-            else if((intMap)[x][y]==3)
-                cout<<"R"; //route
-            else if((intMap)[x][y]==4)
-                cout<<"F"; //finish
-        cout<<endl;
-    }
-}
-
 void createIntMap(vector<vector <int> >& intMap, CellMatrix* myMap)
 {
 	int xSize = myMap->GetWidth();
@@ -72,16 +49,13 @@ void createIntMap(vector<vector <int> >& intMap, CellMatrix* myMap)
 	}
 }
 
-void displayRoute(deque<int> route, Graph* myMap, int xStart, int yStart)
+deque<Point> displayRoute(deque<int> route, Graph* myMap, int xStart, int yStart)
 {
 	vector<vector <int> > map;
 
+	deque<Point> PointRoute;
+
 	createIntMap(map, myMap);
-
-
-//	int ySize = myMap->GetHeight();
-//	int xSize = myMap->GetWidth();
-//	printMap(map, xSize, ySize);
 
 // follow the route on the map and display it
     if(route.size()>0)
@@ -102,15 +76,16 @@ void displayRoute(deque<int> route, Graph* myMap, int xStart, int yStart)
 
             x=x+dx[j];
             y=y+dy[j];
+            PointRoute.push_front(Point(x,y));
             map[x][y]=3;
         }
         map[x][y]=4;
 
-//        printMap(map, xSize, ySize);
-
     }
 
     myMap->SetRouteOnGraph(map);
+
+    return PointRoute;
 }
 
 int main()
@@ -123,9 +98,10 @@ int main()
 	int robotSize;
 
 	deque<int> path;
+	deque<Point> PointRoute;
+
 	Location StartLocation(0,0,0);
 	Point    EndPoint(0,0);
-	int xStart, yStart, yawStart, xFinish, yFinish = 0;
 
 	if (Utils::getParamsFromFile(PARAMS_FILE_NAME, // Parameters.txt
 								inputMapFileName, // Where the map file image is
@@ -169,8 +145,16 @@ int main()
 	} while (false);//path.empty());
 
 
-	displayRoute(path, &graph, StartPointOnGraph.GetX(), StartPointOnGraph.GetY());
+	PointRoute = displayRoute(path, &graph, StartPointOnGraph.GetX(), StartPointOnGraph.GetY());
 
+	cout << "Route Begin;" << endl;
+
+	for (int i = 0; i<PointRoute.size(); i++)
+	{
+		cout << "(" << PointRoute[i].GetX() << "," << PointRoute[i].GetY() << ")" << endl;
+	}
+
+	cout << "Route Ended;" << endl;
 
 	graph.SaveToFile("RouteGraph.png");
 
@@ -180,13 +164,28 @@ int main()
 
 	EnlargedMap.SaveToFile("EnlargedMap.png");
 
-	//Robot robot("localhost", 6665);
-	//robot.setOdometry(2, -3, 0);
-	//Driver driver(&robot);
+#if 1
+
+	Robot robot("localhost", 6665, robotSize / mapResolution);
+
+	robot.SetOdometry(PointRoute[0].GetX(), PointRoute[0].GetY(), 30);
+	Driver driver(&robot);
+
+	driver.TurnToPoint(Location(0,0, 20));
+
+	/**
+	int i = 0;
+	while (!robot.InRadius(FinishPointOnGraph))
+	{
+		i++;
+		driver.TurnToPoint(Location(0,0, 20));
+		//driver.moveToNextWaypoint(Point::GetPixelPointInCM(PointRoute[i]));
+		cout << "Moved to next waypoint!" << endl;
+	}
 
 	//driver.moveToNextWaypoint(3, -3);
-
-
+*/
+#endif
 	printf("FINISH!!!\n");
 
 	return 0;

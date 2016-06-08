@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cmath>
+
 const int INVALID_YAW = -1;
 
 struct Point
@@ -20,6 +22,21 @@ public:
 	    }
 
 	    return *this;
+	}
+
+	static Point GetPixelPointInCM(Point pnt)
+	{
+		return Point(pnt.GetX() / 10, pnt.GetY() / 10);
+	}
+
+	static Point GetCMPointInPixel(Point pnt)
+	{
+		return Point(pnt.GetX() * 10, pnt.GetY() * 10);
+	}
+
+	double GetDistanceFrom(Point pnt)
+	{
+		return sqrt(pow(m_X - pnt.GetX(), 2) + pow(m_Y - pnt.GetY(), 2));
 	}
 
 private:
@@ -44,6 +61,11 @@ public:
 		}
 
 		return *this;
+	}
+
+	double GetAngleFrom(Point pnt)
+	{
+		return 0.0;
 	}
 
 	Location& operator=(Point other) // copy assignment
