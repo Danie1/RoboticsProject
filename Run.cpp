@@ -16,6 +16,7 @@
 #include "Robot.h"
 #include "Driver.h"
 #include "CommonStructs.h"
+#include "Math.h"
 
 #define MAX_FILE_PATH (30)
 const char* PARAMS_FILE_NAME = "parameters.txt";
@@ -168,10 +169,12 @@ int main()
 
 	Robot robot("localhost", 6665, robotSize / mapResolution);
 
-	robot.SetOdometry(PointRoute[0].GetX(), PointRoute[0].GetY(), 30);
+	robot.SetOdometry(PointRoute[0].GetX(), PointRoute[0].GetY(), Math::ConvertDegreesToRadians(30));
 	Driver driver(&robot);
 
 	driver.TurnToPoint(Location(0,0, 20));
+
+	driver.TurnToPoint(Location(0,0, 300));
 
 	/**
 	int i = 0;

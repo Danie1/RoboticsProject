@@ -47,10 +47,10 @@ void Driver::moveToNextWaypoint(Point pnt) {
 
 void Driver::TurnToPoint(Location loc)
 {
-
 		double speed;
 		//abort robot to move if Yaw is same
 		robot->Read();
+
 		double CurrRobotYaw = robot->GetYaw();
 		if(abs(CurrRobotYaw - loc.GetYaw()) < yawTolerance)
 			return;
@@ -60,7 +60,11 @@ void Driver::TurnToPoint(Location loc)
 		else
 			speed = LEFT_ANGULAR_SPEED;
 
+		cout << "11Curr Robot Yaw: " << robot->GetYaw() << endl;
 		robot->SetSpeed(0,speed);
+		robot->Read();
+		cout << "22Curr Robot Yaw: " << robot->GetYaw() << endl;
+
 		while(abs(robot->GetYaw() - loc.GetYaw()) > yawTolerance)
 		{
 			cout << "Curr Robot Yaw: " << robot->GetYaw() << endl;

@@ -11,6 +11,6 @@ public:
 
 	static double ConvertDegreesToRadians(double deg)
 	{
-		return (deg * M_PI) / 180;
+		return ((deg + 180) * M_PI) / 180;
 	}
 };

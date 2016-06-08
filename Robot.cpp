@@ -21,6 +21,8 @@ Robot::Robot(string ip, int port, double RobotSize) : m_CurrentLocation(0,0,0)
 }
 
 void Robot::Read() {
+	// DanielS: Reading twice due to some freakishly odd bug in PlayerStage
+	pc->Read();
 	pc->Read();
 
 	// Update current location:
