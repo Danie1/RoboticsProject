@@ -6,7 +6,7 @@ const double deltaTolerance = 0.02;
 
 const double tolerance = 0.01;
 const double slowSpeedRange = 10 * tolerance;
-const double linearSpeed = 0.8;
+const double linearSpeed = 0.3;
 const double slowSpeedRatio = 0.1;
 
 #define LINEAR_SPEED 0.12

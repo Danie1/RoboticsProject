@@ -55,7 +55,7 @@ void Robot::SetSpeed(double linearSpeed, double angularSpeed) {
 }
 
 void Robot::SetOdometry(double x, double y, double yaw) {
-	pp->SetOdometry(x, y, yaw);
+	pp->SetOdometry(x, y, Math::ConvertDegreesToRadians(yaw));
 }
 
 Robot::~Robot() {

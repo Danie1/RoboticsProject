@@ -14,6 +14,7 @@ class Driver {
 private:
 	Robot& m_robot;
 	double distance(double x1, double y1, double x2, double y2);
+	int calcYawBetweenPoints(Point src, Point dst);
 
 public:
 	Driver(Robot& robot);

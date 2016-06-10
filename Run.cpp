@@ -17,6 +17,7 @@
 #include "Driver.h"
 #include "CommonStructs.h"
 #include "Math.h"
+#include "unistd.h"
 
 #define MAX_FILE_PATH (30)
 const char* PARAMS_FILE_NAME = "parameters.txt";
@@ -169,12 +170,25 @@ int main()
 
 	Robot robot("localhost", 6665, robotSize / mapResolution);
 
-	robot.SetOdometry(PointRoute[0].GetX(), PointRoute[0].GetY(), StartLocation.GetYaw());
+	robot.SetOdometry(PointRoute[PointRoute.size()-1].GetX(), PointRoute[PointRoute.size()-1].GetY(), StartLocation.GetYaw());
 	Driver driver(robot);
 
-	driver.TurnToPoint(Location(0,0, 20));
+	driver.moveToNextWaypoint(PointRoute[PointRoute.size()-1]);
+	driver.moveToNextWaypoint(PointRoute[PointRoute.size()-2]);
 
-	driver.TurnToPoint(Location(0,0, 300));
+	driver.moveToNextWaypoint(Point(66,54));
+
+//	for (int i = PointRoute.size()-1; i >= 0; ++i)
+//	{
+//		driver.moveToNextWaypoint(PointRoute[i]);
+//	}
+
+//	driver.TurnToPoint(Location(0,0, 20));
+//
+//	printf("reach yaw 20\n");
+//	sleep(10);
+//
+//	driver.TurnToPoint(Location(0,0, 300));
 
 	/**
 	int i = 0;
