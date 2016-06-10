@@ -150,7 +150,7 @@ int main()
 
 	cout << "Route Begin;" << endl;
 
-	for (int i = 0; i<PointRoute.size(); i++)
+	for (dword i = 0; i< PointRoute.size(); i++)
 	{
 		cout << "(" << PointRoute[i].GetX() << "," << PointRoute[i].GetY() << ")" << endl;
 	}
@@ -169,8 +169,8 @@ int main()
 
 	Robot robot("localhost", 6665, robotSize / mapResolution);
 
-	robot.SetOdometry(PointRoute[0].GetX(), PointRoute[0].GetY(), Math::ConvertDegreesToRadians(30));
-	Driver driver(&robot);
+	robot.SetOdometry(PointRoute[0].GetX(), PointRoute[0].GetY(), StartLocation.GetYaw());
+	Driver driver(robot);
 
 	driver.TurnToPoint(Location(0,0, 20));
 
