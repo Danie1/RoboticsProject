@@ -24,7 +24,7 @@ int Driver::calcYawBetweenPoints(Point src, Point dst)
 	Point newDst(dst.GetX()-src.GetX(), dst.GetY() - src.GetY());
 
 	cout << "newDst = x: " << newDst.GetX() << ", y: " << newDst.GetY() << endl;
-	double angle = atan(newDst.GetY()/ newDst.GetX());
+	double angle = atan(double(newDst.GetY()) / double(newDst.GetX()));
 	cout << "angle(rad): " << angle << endl;
 	cout << "angle(deg): " << Math::ConvertRadiansToDegrees(angle) << endl;
 
@@ -149,7 +149,7 @@ void Driver::TurnToPoint(Location loc)
 
 		//slow down before reaching angle target
 		m_robot.SetSpeed(0,speed*0.25);
-		while(abs(m_robot.GetYaw() - loc.GetYaw()) > yawTolerance / 4)
+		while(abs(m_robot.GetYaw() - loc.GetYaw()) > yawTolerance / 2)
 		{
 			cout << "2: Curr Robot Yaw: " << m_robot.GetYaw() << endl;
 			m_robot.Read();

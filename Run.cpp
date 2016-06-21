@@ -66,6 +66,8 @@ deque<Point> displayRoute(deque<int> route, Graph* myMap, int xStart, int yStart
         int x=xStart;
         int y=yStart;
         map[x][y]=2;
+        int lastDirection = 1000;
+        int pointsIgnoredCounter = 0;
         for(int i=route.size() - 1;i>=0;i--)
         {
         	j = route.at(i);
@@ -75,6 +77,18 @@ deque<Point> displayRoute(deque<int> route, Graph* myMap, int xStart, int yStart
             	printf("Error in displaying route! - Got %d \r\n", j);
             	continue;
             }
+
+//            // If we are in the same direction, no need to create new way point
+//            if (j == lastDirection && pointsIgnoredCounter < 5)
+//            {
+//            	pointsIgnoredCounter++;
+//            }
+//            else
+//            {
+//            	PointRoute.push_front(Point(x,y));
+//            	lastDirection = j;
+//            	pointsIgnoredCounter = 0;
+//            }
 
             x=x+dx[j];
             y=y+dy[j];
@@ -175,8 +189,9 @@ int main()
 
 	driver.moveToNextWaypoint(PointRoute[PointRoute.size()-1]);
 	driver.moveToNextWaypoint(PointRoute[PointRoute.size()-2]);
+//	driver.moveToNextWaypoint(PointRoute[PointRoute.size()-3]);
 
-	driver.moveToNextWaypoint(Point(66,54));
+//	driver.moveToNextWaypoint(Point(66,54));
 
 //	for (int i = PointRoute.size()-1; i >= 0; ++i)
 //	{
