@@ -1,6 +1,8 @@
 #pragma once
 
 #include <cmath>
+#include <math.h>
+#include "Math.h"
 
 const int INVALID_YAW = -1;
 
@@ -34,6 +36,17 @@ public:
 		return Point(pnt.GetX() * 10, pnt.GetY() * 10);
 	}
 
+	double GetAngleFrom(Point pnt)
+	{
+		double angle = (double) Math::ConvertRadiansToDegrees(atan2(pnt.GetY() - m_Y, pnt.GetX() - m_X));
+
+		if(angle < 0){
+			angle += 360;
+		}
+
+		return angle;
+	}
+
 	double GetDistanceFrom(Point pnt)
 	{
 		return sqrt(pow(m_X - pnt.GetX(), 2) + pow(m_Y - pnt.GetY(), 2));
@@ -61,11 +74,6 @@ public:
 		}
 
 		return *this;
-	}
-
-	double GetAngleFrom(Point pnt)
-	{
-		return 0.0;
 	}
 
 	Location& operator=(Point other) // copy assignment

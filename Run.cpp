@@ -169,19 +169,19 @@ int main()
 
 	Robot robot("localhost", 6665, robotSize / mapResolution);
 
+	printf("StartLocation yaw: %d \r\n", StartLocation.GetYaw());
+
 	robot.SetOdometry(PointRoute[0].GetX(), PointRoute[0].GetY(), StartLocation.GetYaw());
 	Driver driver(robot);
 
-	driver.TurnToPoint(Location(0,0, 20));
+	driver.TurnToPoint(Point::GetPixelPointInCM(PointRoute[1]));
 
-	driver.TurnToPoint(Location(0,0, 300));
-
-	/**
+/*
 	int i = 0;
 	while (!robot.InRadius(FinishPointOnGraph))
 	{
 		i++;
-		driver.TurnToPoint(Location(0,0, 20));
+		driver.TurnToPoint(Point::GetPixelPointInCM(PointRoute[i]));
 		//driver.moveToNextWaypoint(Point::GetPixelPointInCM(PointRoute[i]));
 		cout << "Moved to next waypoint!" << endl;
 	}
