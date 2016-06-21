@@ -24,9 +24,14 @@ void Robot::Read() {
 	// DanielS: Reading twice due to some freakishly odd bug in PlayerStage
 	pc->Read();
 	pc->Read();
+	pc->Read();
+	pc->Read();
+	pc->Read();
 
 	// Update current location:
-	m_CurrentLocation = Location(GetX() * m_RobotSizeInPixel, GetY() * m_RobotSizeInPixel, GetYaw());
+	m_CurrentLocation = Location(GetX(),
+								 GetY(),
+								 Math::ConvertRadiansToDegrees(GetYaw()));
 
 }
 
@@ -55,7 +60,8 @@ void Robot::SetSpeed(double linearSpeed, double angularSpeed) {
 }
 
 void Robot::SetOdometry(double x, double y, double yaw) {
-	pp->SetOdometry(x, y, yaw);
+	for (int i = 0; i< 15; i++)
+		pp->SetOdometry(x, y, Math::ConvertDegreesToRadians(yaw));
 }
 
 Robot::~Robot() {

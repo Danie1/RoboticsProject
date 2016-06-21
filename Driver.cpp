@@ -69,8 +69,8 @@ void Driver::TurnByDegree(double degree)
 
 	while(abs(m_robot.GetYaw() - degree) > yawTolerance)
 	{
-		cout << "Curr Robot Yaw: " << m_robot.GetYaw() << endl;
 		m_robot.Read();
+		printf("Curr Robot Yaw: %f || Degree: %f\r\n", m_robot.GetYaw(), degree);
 	}
 
 	//slow down before reaching angle target

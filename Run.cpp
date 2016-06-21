@@ -170,11 +170,14 @@ int main()
 	Robot robot("localhost", 6665, robotSize / mapResolution);
 
 	printf("StartLocation yaw: %d \r\n", StartLocation.GetYaw());
+	printf("Point: (%d, %d) \r\n", PointRoute[0].GetX(), PointRoute[0].GetY());
 
-	robot.SetOdometry(PointRoute[0].GetX(), PointRoute[0].GetY(), StartLocation.GetYaw());
+	robot.SetOdometry(PointRoute[PointRoute.size() - 1].GetX(), PointRoute[PointRoute.size() - 1].GetY(), StartLocation.GetYaw());
+	robot.Read();
+	printf("Robot thinks it's in: (%f, %f) \r\n", robot.GetX(), robot.GetY());
 	Driver driver(robot);
 
-	driver.TurnToPoint(Point::GetPixelPointInCM(PointRoute[1]));
+	driver.TurnToPoint(PointRoute[PointRoute.size() - 2]);
 
 /*
 	int i = 0;

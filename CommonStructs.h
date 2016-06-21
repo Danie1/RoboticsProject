@@ -3,6 +3,7 @@
 #include <cmath>
 #include <math.h>
 #include "Math.h"
+#include <stdio.h>
 
 const int INVALID_YAW = -1;
 
@@ -38,13 +39,11 @@ public:
 
 	double GetAngleFrom(Point pnt)
 	{
-		double angle = (double) Math::ConvertRadiansToDegrees(atan2(pnt.GetY() - m_Y, pnt.GetX() - m_X));
+		Point tmpPoint = Point(pnt.GetX() - m_X,  m_Y - pnt.GetY());
 
-		if(angle < 0){
-			angle += 360;
-		}
+		double radian_angle = atan(double(tmpPoint.GetY()) / double(tmpPoint.GetX()));
 
-		return angle;
+		return Math::ConvertRadiansToDegrees(radian_angle);
 	}
 
 	double GetDistanceFrom(Point pnt)
