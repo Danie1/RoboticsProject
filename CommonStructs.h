@@ -10,12 +10,12 @@ const int INVALID_YAW = -1;
 struct Point
 {
 public:
-	Point(int X, int Y) { m_X = X; m_Y = Y;}
+	Point(double X, double Y) { m_X = X; m_Y = Y;}
 
-	int GetX() { return m_X;}
-	int GetY() { return m_Y; }
-	void SetX(int X) { m_X = X;	}
-	void SetY(int Y) { m_Y = Y;	}
+	double GetX() { return m_X;}
+	double GetY() { return m_Y; }
+	void SetX(double X) { m_X = X;	}
+	void SetY(double Y) { m_Y = Y;	}
 
 	Point& operator=(Point other) // copy assignment
 	{
@@ -52,14 +52,14 @@ public:
 	}
 
 private:
-	int m_X;
-	int m_Y;
+	double m_X;
+	double m_Y;
 };
 
 struct Location : public Point
 {
 public:
-	Location(int X, int Y, int YAW) : Point(X, Y), m_YAW(YAW) {}
+	Location(double X, double Y, int YAW) : Point(X, Y), m_YAW(YAW) {}
 
 	int GetYaw() {return m_YAW;}
 	void SetYaw(int YAW) { m_YAW = YAW;}

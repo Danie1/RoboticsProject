@@ -51,6 +51,23 @@ void CellMatrix::SetCell(int row, int col, ECellState eType)
 		printf("Tried to set a cell that doesn't exist! - (%d, %d) \r\n", row, col);
 }
 
+bool CellMatrix::IsNearObstacle(dword row, dword col)
+{
+	for (int i = row - 5; i <= row + 5; i++)
+	{
+		for (int j = col - 5; j <= col + 5; j++)
+		{
+			if ((i < m_height && i >= 0 && j < m_width && j >= 0) &&
+					(m_matrix[i][j] == eCellState_obstacle))
+			{
+				return true;
+			}
+		}
+	}
+
+	return false;
+}
+
 ECellState CellMatrix::GetCell(int row, int col)
 {
 	return m_matrix[row][col];

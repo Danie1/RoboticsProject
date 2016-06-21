@@ -14,12 +14,13 @@ class Driver {
 private:
 	Robot& m_robot;
 	double distance(double x1, double y1, double x2, double y2);
-	void TurnByDegree(double degree);
+	void TurnToDegree(double degree);
 
 public:
 	Driver(Robot& robot);
-	void moveToNextWaypoint(Point pnt);
+	bool MoveToPoint(Point pnt);
 	void TurnToPoint(Point loc);
+	void MoveToWayPoint(Point pnt);
 	virtual ~Driver();
 };
 

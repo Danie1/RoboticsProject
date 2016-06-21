@@ -22,7 +22,7 @@ private:
 	LaserProxy *lp;
 	double m_RobotSizeInPixel;
 public:
-	Robot(string ip, int port, double RobotSize);
+	Robot(string ip, int port, double RobotSize, Point StartPoint);
 	void Read();
 	double GetX();
 	double GetY();
@@ -33,10 +33,15 @@ public:
 	virtual ~Robot();
 
 	Location GetCurrentLocation() {
-		return m_CurrentLocation;
+		return Location(GetX(), GetY(), GetYaw());
 	}
 
+private:
+	double GetRobotX();
+	double GetRobotY();
+
 	Location m_CurrentLocation;
+	Point m_StartPoint;
 };
 
 #endif /* ROBOT_H_ */
