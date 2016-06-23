@@ -9,6 +9,7 @@
 #define CELL_MATRIX_H_
 
 #include <vector>
+#include "CommonStructs.h"
 
 using namespace std;
 
@@ -38,6 +39,8 @@ public:
 
 	void LoadFromFile(const char* mapFileName);
 	void SaveToFile(const char* mapFileName);
+
+	bool IsThereObstacleBetweenPoints(Point firstPoint, Point secondPoint);
 
 	template<typename Lambda>
 	bool ActionInSubMatrix(dword beg_row, dword beg_col, dword end_row, dword end_col, Lambda ActionFunc, bool fQuitOnFailure = false)

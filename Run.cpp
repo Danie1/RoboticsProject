@@ -50,6 +50,73 @@ void createIntMap(vector<vector <int> >& intMap, CellMatrix* myMap)
 	}
 }
 
+deque<Point> myFunc(deque<Point> route)
+{
+	deque<Point> reverseRoute;
+	for (int i = route.size() - 1; i >= 0; i--)
+	{
+		reverseRoute.push_back(route[i]);
+	}
+
+	return reverseRoute;
+}
+
+void printRoute(deque<Point> route)
+{
+	cout << "Route Begin;" << endl;
+
+	for (dword i = 0; i< route.size(); i++)
+	{
+		cout << "(" << route[i].GetX() << "," << route[i].GetY() << ")" << endl;
+	}
+	cout << "Route Ended;" << endl;
+}
+
+deque<Point> improvePointRoute(deque<Point> originalRoute, Graph* myMap)
+{
+	deque<Point> newRoute;
+	myMap->printMatrix();
+
+//	printf("originalRoute: \n");
+//	printRoute(originalRoute);
+	deque<Point> reverseRoute;
+
+	reverseRoute = myFunc(originalRoute);
+
+//	printf("reverseRoute: \n");
+//	printRoute(reverseRoute);
+//	reverseRoute = reverseRoute(originalRoute);
+
+	// Put the first waypoint in the new route
+	newRoute.push_back(reverseRoute[0]);
+	int lastWaypointIndex = 0;
+
+	for(int i = 2; i <= reverseRoute.size(); i++)
+	{
+		printf("checking line between waypoint1 (%f, %f) and waypoint (%f, %f)\n",
+			reverseRoute[lastWaypointIndex].GetX(), reverseRoute[lastWaypointIndex].GetY(), reverseRoute[i].GetX(), reverseRoute[i].GetY());
+		if (myMap->IsThereObstacleBetweenPoints(reverseRoute[lastWaypointIndex], reverseRoute[i]))
+		{
+			newRoute.push_back(reverseRoute[i - 1]);
+			lastWaypointIndex = i - 1;
+		}
+//		myMap->printMatrix();
+	}
+
+	printf("newRoute:\n");
+	printRoute(newRoute);
+
+	for (int i = 0; i < newRoute.size(); ++i)
+	{
+		myMap->SetCell(newRoute[i].GetY(), newRoute[i].GetX(), ecellState_waypoint);
+	}
+
+	myMap->printMatrix();
+
+	return myFunc(newRoute);
+//	return newRoute;
+}
+
 deque<Point> displayRoute(deque<int> route, Graph* myMap, int xStart, int yStart)
 {
 
@@ -69,6 +136,7 @@ deque<Point> displayRoute(deque<int> route, Graph* myMap, int xStart, int yStart
         map[x][y]=2;
         int lastDirection = 1000;
         int pointsIgnoredCounter = 0;
+
         for(int i=route.size() - 1;i>=0;i--)
         {
         	j = route.at(i);
@@ -78,12 +146,6 @@ deque<Point> displayRoute(deque<int> route, Graph* myMap, int xStart, int yStart
             	printf("Error in displaying route! - Got %d \r\n", j);
             	continue;
             }
-
-
-            x=x+dx[j];
-            y=y+dy[j];
-//            PointRoute.push_front(Point(x,y));
-            map[x][y]=3;
 
             // If we are in the same direction, no need to create new point
             if (j == lastDirection && pointsIgnoredCounter < MAX_POINTS_TO_IGNORE)
@@ -96,8 +158,16 @@ deque<Point> displayRoute(deque<int> route, Graph* myMap, int xStart, int yStart
             	lastDirection = j;
             	pointsIgnoredCounter = 0;
             }
+
+            x=x+dx[j];
+            y=y+dy[j];
+//            PointRoute.push_front(Point(x,y));
+            map[x][y]=3;
+
+
         }
         map[x][y]=4;
+        PointRoute.push_front(Point(x,y));
 
     }
 
@@ -171,9 +241,11 @@ int main()
 	{
 		cout << "(" << PointRoute[i].GetX() << "," << PointRoute[i].GetY() << ")" << endl;
 	}
-
 	cout << "Route Ended;" << endl;
 
+	deque<Point> newPointRoute = improvePointRoute(PointRoute, &graph);
+
+#if 1
 	graph.SaveToFile("RouteGraph.png");
 
 	Map EnlargedMap(mapResolution, robotSize);
@@ -182,9 +254,9 @@ int main()
 
 	EnlargedMap.SaveToFile("EnlargedMap.png");
 
-	Robot robot("localhost", 6665, robotSize / mapResolution, PointRoute[PointRoute.size() - 1]);
+	Robot robot("localhost", 6665, robotSize / mapResolution, newPointRoute[newPointRoute.size() - 1]);
 
-	robot.SetOdometry(PointRoute[PointRoute.size() - 1].GetX(), PointRoute[PointRoute.size() - 1].GetY(), StartLocation.GetYaw());
+	robot.SetOdometry(newPointRoute[newPointRoute.size() - 1].GetX(), newPointRoute[newPointRoute.size() - 1].GetY(), StartLocation.GetYaw());
 	robot.Read();
 
 	Driver driver(robot);
@@ -193,32 +265,41 @@ int main()
 
 	//driver.MoveToWayPoint(PointRoute[PointRoute.size() - 7]);
 
-	Location currLoc = Location(PointRoute[PointRoute.size() - 1].GetX(), PointRoute[PointRoute.size() - 1].GetY(), 20);
+	Location currLoc = Location(newPointRoute[newPointRoute.size() - 1].GetX(), newPointRoute[newPointRoute.size() - 1].GetY(), 20);
 
 	double angle = 0;
 
-	for (int i = 2; i < PointRoute.size(); i++)
+	for (int i = 2; i < newPointRoute.size(); i++)
 	{
 		//driver.MoveToWayPoint(PointRoute[PointRoute.size() - i]);
 		//driver.moveToNextWaypoint(Point::GetPixelPointInCM(PointRoute[i]));
-		angle = currLoc.GetAngleFrom(PointRoute[PointRoute.size() - i]);
+		angle = currLoc.GetAngleFrom(newPointRoute[newPointRoute.size() - i]);
 		printf("The new angle is: %f \r\n", angle);
-		currLoc = PointRoute[PointRoute.size() - i];
+		currLoc = newPointRoute[newPointRoute.size() - i];
 	}
 
 
 #if 1
+	char temp[100];
 	int i = 0;
-	while (!robot.InRadius(FinishPointOnGraph))
+	printf("FinishPointOnGraph (%f,%f)\n", FinishPointOnGraph.GetX(), FinishPointOnGraph.GetY());
+	while (!robot.InRadius(newPointRoute[0]))
 	{
 		i++;
-		driver.MoveToWayPoint(PointRoute[PointRoute.size() - i]);
+		if (i > newPointRoute.size())
+		{
+			printf("we go through all waypoints and still the robot didn't reach his destination :(\n");
+			break;
+		}
+		driver.MoveToWayPoint(newPointRoute[newPointRoute.size() - i]);
 		//driver.moveToNextWaypoint(Point::GetPixelPointInCM(PointRoute[i]));
-		cout << "Moved to next waypoint!" << endl;
+		cout << "Moved to next waypoint!. press enter to continue" << endl;
+//		scanf("%s", temp);
 	}
 
 	//driver.moveToNextWaypoint(3, -3);
 
+#endif
 #endif
 	printf("FINISH!!!\n");
 

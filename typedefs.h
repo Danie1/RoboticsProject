@@ -20,6 +20,8 @@ enum ECellState
 	eCellState_start,
 	eCellState_route,
 	eCellState_finish,
+	ecellState_debug,
+	ecellState_waypoint,
 	eCellState_numOfStates
 };
 

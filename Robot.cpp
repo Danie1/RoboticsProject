@@ -38,7 +38,11 @@ void Robot::Read() {
 
 bool Robot::InRadius(Point pnt)
 {
-	return m_CurrentLocation.GetDistanceFrom(pnt) <= MINIMUM_DISTANCE_FROM_POINT;
+	double distanceFromPnt = GetCurrentLocation().GetDistanceFrom(pnt);
+
+	printf("pnt (%f, %f) distance form currLocation (%f , %f) is %f. ok is %f\n", pnt.GetX(), pnt.GetY(), GetCurrentLocation().GetX(), GetCurrentLocation().GetY(), distanceFromPnt, tolerance);
+	return GetCurrentLocation().GetDistanceFrom(pnt) <= tolerance;
+//	return m_CurrentLocation.GetDistanceFrom(pnt) <= MINIMUM_DISTANCE_FROM_POINT;
 }
 
 double Robot::GetYaw()
