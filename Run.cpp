@@ -75,7 +75,6 @@ void printRoute(deque<Point> route)
 deque<Point> improvePointRoute(deque<Point> originalRoute, Graph* myMap)
 {
 	deque<Point> newRoute;
-	myMap->printMatrix();
 
 //	printf("originalRoute: \n");
 //	printRoute(originalRoute);
@@ -91,16 +90,21 @@ deque<Point> improvePointRoute(deque<Point> originalRoute, Graph* myMap)
 	newRoute.push_back(reverseRoute[0]);
 	int lastWaypointIndex = 0;
 
-	for(int i = 2; i <= reverseRoute.size(); i++)
+	for(int i = 2; i < reverseRoute.size(); i++)
 	{
-		printf("checking line between waypoint1 (%f, %f) and waypoint (%f, %f)\n",
-			reverseRoute[lastWaypointIndex].GetX(), reverseRoute[lastWaypointIndex].GetY(), reverseRoute[i].GetX(), reverseRoute[i].GetY());
+//		printf("checking line between waypoint1 (%f, %f) and waypoint (%f, %f)\n",
+//			reverseRoute[lastWaypointIndex].GetX(), reverseRoute[lastWaypointIndex].GetY(), reverseRoute[i].GetX(), reverseRoute[i].GetY());
 		if (myMap->IsThereObstacleBetweenPoints(reverseRoute[lastWaypointIndex], reverseRoute[i]))
 		{
 			newRoute.push_back(reverseRoute[i - 1]);
 			lastWaypointIndex = i - 1;
 		}
 //		myMap->printMatrix();
+	}
+
+	if (lastWaypointIndex != reverseRoute.size() - 1)
+	{
+		newRoute.push_back(reverseRoute[reverseRoute.size() - 1]);
 	}
 
 	printf("newRoute:\n");
@@ -110,8 +114,6 @@ deque<Point> improvePointRoute(deque<Point> originalRoute, Graph* myMap)
 	{
 		myMap->SetCell(newRoute[i].GetY(), newRoute[i].GetX(), ecellState_waypoint);
 	}
-
-	myMap->printMatrix();
 
 	return myFunc(newRoute);
 //	return newRoute;
@@ -269,7 +271,7 @@ int main()
 
 	double angle = 0;
 
-	for (int i = 2; i < newPointRoute.size(); i++)
+	for (int i = 2; i <= newPointRoute.size(); i++)
 	{
 		//driver.MoveToWayPoint(PointRoute[PointRoute.size() - i]);
 		//driver.moveToNextWaypoint(Point::GetPixelPointInCM(PointRoute[i]));

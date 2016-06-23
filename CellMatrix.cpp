@@ -199,14 +199,24 @@ bool CellMatrix::IsThereObstacleBetweenPoints(Point firstPoint, Point secondPoin
 
 	double m = (secondPoint.GetY() - firstPoint.GetY()) / (secondPoint.GetX() - firstPoint.GetX());
 
-	printf("line between points\n");
+	if (firstPoint.GetX() == secondPoint.GetX())
+	{
+
+		for(int yVal = min(firstPoint.GetY(), secondPoint.GetY()); yVal <= max(firstPoint.GetY(), secondPoint.GetY()); yVal++)
+		{
+			if (m_matrix[yVal][firstPoint.GetX()] == eCellState_obstacle)
+			{
+				return true;
+			}
+		}
+	}
+
 
 	if (firstPoint.GetX() < secondPoint.GetX())
 	{
 		for (int xVal = firstPoint.GetX(); xVal <= secondPoint.GetX(); xVal++)
 		{
 			int yVal = m*xVal -m*firstPoint.GetX() + firstPoint.GetY();
-			printf("(%d , %d)\n", xVal,yVal);
 			if (m_matrix[yVal][xVal] == eCellState_obstacle)
 			{
 				return true;
@@ -219,7 +229,6 @@ bool CellMatrix::IsThereObstacleBetweenPoints(Point firstPoint, Point secondPoin
 		for (int xVal = secondPoint.GetX(); xVal <= firstPoint.GetX(); xVal++)
 		{
 			int yVal = m*xVal -m*firstPoint.GetX() + firstPoint.GetY();
-			printf("(%d , %d)\n", xVal,yVal);
 			if (m_matrix[yVal][xVal] == eCellState_obstacle)
 			{
 				return true;
