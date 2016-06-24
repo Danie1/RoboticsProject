@@ -4,3 +4,5 @@ goal: 169 138
 robotSize: 30 30
 MapResolutionCM: 2.5
 GridResolutionCM: 10
+#bugGoalLocation: 93 128
+#goal: 370 330

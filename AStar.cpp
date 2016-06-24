@@ -143,7 +143,7 @@ deque<int> AStar::pathFind( const int & xStart, const int & yStart,
                 // generate a child node
                 m0=new node( xdx, ydy, n0->getLevel(),
                              n0->getPriority());
-                m0->nextLevel(i);
+                m0->nextLevel(i, originMap->IsNearObstacle(ydy, xdx));
                 m0->updatePriority(xFinish, yFinish);
 
                 // if it is not in the open list then add into that

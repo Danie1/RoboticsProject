@@ -10,11 +10,15 @@
 #define START_CELL_CHAR 	("S")
 #define ROUTE_CELL_CHAR 	("R")
 #define FINISH_CELL_CHAR 	("F")
+#define DEBUG_CELL_CHAR		("#")
+#define WAYPOINT_CELL_CHAR	("W")
 const char* CELL_SYMBOLS[eCellState_numOfStates] = {CLEAR_CELL_CHAR,
 												   OBSTACLE_CELL_CHAR,
 												   START_CELL_CHAR,
 												   ROUTE_CELL_CHAR,
-												   FINISH_CELL_CHAR};
+												   FINISH_CELL_CHAR,
+												   DEBUG_CELL_CHAR,
+												   WAYPOINT_CELL_CHAR};
 
 
 const int CLEAR_PIXEL_COLOR[4] = {255,255,255,255};
@@ -22,12 +26,16 @@ const int OBSTACLE_PIXEL_COLOR[4] = {0,0,0,255};
 const int START_PIXEL_COLOR[4] = {0,255,0,255};
 const int ROUTE_PIXEL_COLOR[4] = {255,0,0,255};
 const int FINISH_PIXEL_COLOR[4] = {0,0,255,255};
+const int DEBUG_PIXEL_COLOR[4] = {150,150,150,255};
+const int WAYPOINT_PIXEL_COLOR[4] = {150,150,150,255};
 
 const int* PIXEL_COLOR[eCellState_numOfStates] = {CLEAR_PIXEL_COLOR,
 												  OBSTACLE_PIXEL_COLOR,
 												  START_PIXEL_COLOR,
 												  ROUTE_PIXEL_COLOR,
-												  FINISH_PIXEL_COLOR};
+												  FINISH_PIXEL_COLOR,
+												  DEBUG_PIXEL_COLOR,
+												  WAYPOINT_PIXEL_COLOR};
 
 
 CellMatrix::CellMatrix() : m_width(0), m_height(0)
@@ -49,6 +57,24 @@ void CellMatrix::SetCell(int row, int col, ECellState eType)
 		m_matrix[row][col] = eType;
 	else
 		printf("Tried to set a cell that doesn't exist! - (%d, %d) \r\n", row, col);
+}
+
+bool CellMatrix::IsNearObstacle(dword row, dword col)
+{
+	int const nearRadious = 1;
+	for (int i = row - nearRadious; i <= row + nearRadious; i++)
+	{
+		for (int j = col - nearRadious; j <= col + nearRadious; j++)
+		{
+			if ((i < m_height && i >= 0 && j < m_width && j >= 0) &&
+					(m_matrix[i][j] == eCellState_obstacle))
+			{
+				return true;
+			}
+		}
+	}
+
+	return false;
 }
 
 ECellState CellMatrix::GetCell(int row, int col)
@@ -158,4 +184,63 @@ void CellMatrix::printMatrix()
 		printf("\n");
 	}
 }
+
+
+bool CellMatrix::IsThereObstacleBetweenPoints(Point firstPoint, Point secondPoint)
+{
+	if (firstPoint.GetX() >= m_width || firstPoint.GetX() <= 0 ||
+		firstPoint.GetY() >= m_height|| firstPoint.GetY() <= 0 ||
+		secondPoint.GetX() >= m_width || secondPoint.GetX() <= 0 ||
+		secondPoint.GetY() >= m_height || secondPoint.GetY() <= 0)
+	{
+		printf("IsThereObstacleBetweenPoints:: out of bounds\n");
+		exit(-1);
+	}
+
+	double m = (secondPoint.GetY() - firstPoint.GetY()) / (secondPoint.GetX() - firstPoint.GetX());
+
+	if (firstPoint.GetX() == secondPoint.GetX())
+	{
+
+		for(int yVal = min(firstPoint.GetY(), secondPoint.GetY()); yVal <= max(firstPoint.GetY(), secondPoint.GetY()); yVal++)
+		{
+			if (m_matrix[yVal][firstPoint.GetX()] == eCellState_obstacle)
+			{
+				return true;
+			}
+		}
+	}
+
+
+	if (firstPoint.GetX() < secondPoint.GetX())
+	{
+		for (int xVal = firstPoint.GetX(); xVal <= secondPoint.GetX(); xVal++)
+		{
+			int yVal = m*xVal -m*firstPoint.GetX() + firstPoint.GetY();
+			if (m_matrix[yVal][xVal] == eCellState_obstacle)
+			{
+				return true;
+			}
+//			m_matrix[yVal][xVal] = ecellState_debug;
+		}
+	}
+	else
+	{
+		for (int xVal = secondPoint.GetX(); xVal <= firstPoint.GetX(); xVal++)
+		{
+			int yVal = m*xVal -m*firstPoint.GetX() + firstPoint.GetY();
+			if (m_matrix[yVal][xVal] == eCellState_obstacle)
+			{
+				return true;
+			}
+//			m_matrix[yVal][xVal] = ecellState_debug;
+		}
+	}
+
+	return false;
+
+}
+
+
+
 

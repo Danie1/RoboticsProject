@@ -95,7 +95,7 @@ bool Utils::getParamsFromFile(const char* paramsFileName,
 			{
 				o_gridResolution = atof(token[1]);
 			}
-			else
+			else if(token[0][0]!= '#')
 			{
 				printf("unknown param: %s\n", token[0]);
 			}

@@ -8,20 +8,19 @@
 #ifndef DRIVER_H_
 #define DRIVER_H_
 #include "Robot.h"
+#include "CommonStructs.h"
 
 class Driver {
 private:
-	const double tolerance = 0.01;
-	const double slowSpeedRange = 10 * tolerance;
-	const double linearSpeed = 0.8;
-	const double slowSpeedRatio = 0.1;
-
-	Robot *robot;
+	Robot& m_robot;
 	double distance(double x1, double y1, double x2, double y2);
+	void TurnToDegree(double degree);
 
 public:
-	Driver(Robot *robot);
-	void moveToNextWaypoint(double x, double y);
+	Driver(Robot& robot);
+	bool MoveToPoint(Point pnt);
+	void TurnToPoint(Point loc);
+	void MoveToWayPoint(Point pnt);
 	virtual ~Driver();
 };
 

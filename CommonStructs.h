@@ -1,16 +1,21 @@
 #pragma once
 
+#include <cmath>
+#include <math.h>
+#include "Math.h"
+#include <stdio.h>
+
 const int INVALID_YAW = -1;
 
 struct Point
 {
 public:
-	Point(int X, int Y) { m_X = X; m_Y = Y;}
+	Point(double X, double Y) { m_X = X; m_Y = Y;}
 
-	int GetX() { return m_X;}
-	int GetY() { return m_Y; }
-	void SetX(int X) { m_X = X;	}
-	void SetY(int Y) { m_Y = Y;	}
+	double GetX() { return m_X;}
+	double GetY() { return m_Y; }
+	void SetX(double X) { m_X = X;	}
+	void SetY(double Y) { m_Y = Y;	}
 
 	Point& operator=(Point other) // copy assignment
 	{
@@ -22,15 +27,39 @@ public:
 	    return *this;
 	}
 
+	static Point GetPixelPointInCM(Point pnt)
+	{
+		return Point(pnt.GetX() / 10, pnt.GetY() / 10);
+	}
+
+	static Point GetCMPointInPixel(Point pnt)
+	{
+		return Point(pnt.GetX() * 10, pnt.GetY() * 10);
+	}
+
+	double GetAngleFrom(Point pnt)
+	{
+		Point tmpPoint = Point(pnt.GetX() - m_X,  m_Y - pnt.GetY());
+
+		double radian_angle = atan(double(tmpPoint.GetY()) / double(tmpPoint.GetX()));
+
+		return Math::ConvertRadiansToDegrees(radian_angle);
+	}
+
+	double GetDistanceFrom(Point pnt)
+	{
+		return sqrt(pow(m_X - pnt.GetX(), 2) + pow(m_Y - pnt.GetY(), 2));
+	}
+
 private:
-	int m_X;
-	int m_Y;
+	double m_X;
+	double m_Y;
 };
 
 struct Location : public Point
 {
 public:
-	Location(int X, int Y, int YAW) : Point(X, Y), m_YAW(YAW) {}
+	Location(double X, double Y, int YAW) : Point(X, Y), m_YAW(YAW) {}
 
 	int GetYaw() {return m_YAW;}
 	void SetYaw(int YAW) { m_YAW = YAW;}

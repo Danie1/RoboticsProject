@@ -1,0 +1,17 @@
+#pragma once
+
+const double yawTolerance = 1;
+const double slowSpeedYawRange = 0.4 * yawTolerance;
+
+const double tolerance = 0.5;
+const double slowSpeedRange = 5 * tolerance;
+const double linearSpeed = 0.3;
+const double slowSpeedRatio = 0.1;
+
+#define LEFT_ANGULAR_SPEED 0.10
+#define RIGHT_ANGULAR_SPEED -0.10
+
+#define LOOK_UP 90
+#define LOOK_RIGHT 0
+#define LOOK_LEFT 180
+#define LOOK_DOWN -90
