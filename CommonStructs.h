@@ -43,7 +43,15 @@ public:
 
 		double radian_angle = atan(double(tmpPoint.GetY()) / double(tmpPoint.GetX()));
 
-		return Math::ConvertRadiansToDegrees(radian_angle);
+		double degree_angle = Math::ConvertRadiansToDegrees(radian_angle);
+
+		// If the new point is in first or forth quarter, fix the angle
+		if (tmpPoint.GetX() > 0)
+		{
+			degree_angle = fmod(degree_angle + 180, 360);
+		}
+
+		return degree_angle;
 	}
 
 	double GetDistanceFrom(Point pnt)
