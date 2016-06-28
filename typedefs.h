@@ -22,6 +22,7 @@ enum ECellState
 	eCellState_finish,
 	ecellState_debug,
 	ecellState_waypoint,
+	ecellState_particle,
 	eCellState_numOfStates
 };
 

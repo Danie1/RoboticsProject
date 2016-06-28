@@ -25,9 +25,12 @@ public:
 	CellMatrix();
     ~CellMatrix();
 
+    CellMatrix& operator=(CellMatrix cm);
+
 	virtual void SetCell(int row, int col, ECellState eType);
 	virtual ECellState GetCell(int row, int col);
 	virtual bool IsCellClear(dword row, dword col);
+	virtual bool IsCellObstacle(dword row, dword col);
 
 	bool IsNearObstacle(dword row, dword col);
 

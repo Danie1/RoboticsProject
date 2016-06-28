@@ -83,6 +83,11 @@ double Robot::GetY()
 	return m_StartPoint.GetY() + (GetRobotY() - m_StartPoint.GetY()) * GRAPH_RESOLUTION;
 }
 
+double Robot::GetDistanceFromLaser(int index)
+{
+	return lp->GetRange(index);
+}
+
 //// Private accessors
 double Robot::GetRobotX()
 {

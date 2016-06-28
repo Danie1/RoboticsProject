@@ -19,8 +19,10 @@ class Robot {
 private:
 	PlayerClient *pc;
 	Position2dProxy *pp;
-	LaserProxy *lp;
 	double m_RobotSizeInPixel;
+public:
+	LaserProxy *lp;
+
 public:
 	Robot(string ip, int port, double RobotSize, Point StartPoint);
 	void Read();
@@ -28,6 +30,7 @@ public:
 	double GetY();
 	double GetYaw();
 	void SetOdometry(double x, double y, double yaw);
+	double GetDistanceFromLaser(int index);
 	void SetSpeed(double linearSpeed, double angularSpeed);
 	bool InRadius(Point pnt);
 	virtual ~Robot();

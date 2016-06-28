@@ -17,6 +17,9 @@
 #include "Driver.h"
 #include "CommonStructs.h"
 #include "Math.h"
+#include "Definitions.h"
+#include "LocalizationManager.h"
+#include "Particle.h"
 
 #include "RouteMngr.h"
 
@@ -95,6 +98,65 @@ int main()
 	Location currLoc = Location(newPointRoute[newPointRoute.size() - 1].GetX(),
 							    newPointRoute[newPointRoute.size() - 1].GetY(),
 							    StartLocation.GetYaw());
+
+#if 0
+	for (int i=0; i<360; i++)
+	{
+		printf("Deg: %f \r\n", Math::ConvertRadiansToDegrees(Math::ConvertDegreesToRadians(i)));
+	}
+
+	return -1;
+#endif
+
+#if 1
+	Graph partGraph = graph;
+	 // Create the first particles
+	Localization localization(graph);
+
+    Particle* p = new Particle(robot.GetX(), robot.GetY(), robot.GetYaw(), 0.51);
+
+	localization.particles.push_back(p);
+
+	for (int i = 0; i<MAX_PARTICLES_COUNT; i++)
+	{
+		localization.particles.push_back(p->CreateChild(5, 1, partGraph));
+	}
+
+	for (int i = 0; i < localization.particles.size(); ++i)
+	{
+		partGraph.SetCell(localization.particles[i]->GetY(), localization.particles[i]->GetX(), ecellState_particle);
+	}
+
+	Map EnlargedMap1(mapResolution, robotSize);
+
+	partGraph.ConvertToMap(EnlargedMap1);
+
+	EnlargedMap1.SaveToFile("initParticle1.png");
+
+	Graph partGraph2 = graph;
+
+	localization.Update(0,
+								0,
+								0,
+								robot);
+
+	for (int i = 0; i < localization.particles.size(); ++i)
+	{
+		partGraph2.SetCell(localization.particles[i]->GetY(), localization.particles[i]->GetX(), ecellState_particle);
+	}
+
+	Map EnlargedMap2(mapResolution, robotSize);
+
+	partGraph2.ConvertToMap(EnlargedMap2);
+
+	EnlargedMap2.SaveToFile("initParticle2.png");
+
+	printf("Ended!\r\n");
+	return 0;
+#endif
+
+
+
 
 	int i = 0;
 	printf("FinishPointOnGraph (%f,%f)\n", FinishPointOnGraph.GetX(), FinishPointOnGraph.GetY());

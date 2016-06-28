@@ -12,13 +12,15 @@
 #define FINISH_CELL_CHAR 	("F")
 #define DEBUG_CELL_CHAR		("#")
 #define WAYPOINT_CELL_CHAR	("W")
+#define PARTICLE_CELL_CHAR	("P")
 const char* CELL_SYMBOLS[eCellState_numOfStates] = {CLEAR_CELL_CHAR,
 												   OBSTACLE_CELL_CHAR,
 												   START_CELL_CHAR,
 												   ROUTE_CELL_CHAR,
 												   FINISH_CELL_CHAR,
 												   DEBUG_CELL_CHAR,
-												   WAYPOINT_CELL_CHAR};
+												   WAYPOINT_CELL_CHAR,
+												   PARTICLE_CELL_CHAR};
 
 
 const int CLEAR_PIXEL_COLOR[4] = {255,255,255,255};
@@ -28,6 +30,7 @@ const int ROUTE_PIXEL_COLOR[4] = {255,0,0,255};
 const int FINISH_PIXEL_COLOR[4] = {0,0,255,255};
 const int DEBUG_PIXEL_COLOR[4] = {150,150,150,255};
 const int WAYPOINT_PIXEL_COLOR[4] = {150,150,150,255};
+const int PARTICLE_PIXEL_COLOR[4] = {255,0,255,255};
 
 const int* PIXEL_COLOR[eCellState_numOfStates] = {CLEAR_PIXEL_COLOR,
 												  OBSTACLE_PIXEL_COLOR,
@@ -35,7 +38,8 @@ const int* PIXEL_COLOR[eCellState_numOfStates] = {CLEAR_PIXEL_COLOR,
 												  ROUTE_PIXEL_COLOR,
 												  FINISH_PIXEL_COLOR,
 												  DEBUG_PIXEL_COLOR,
-												  WAYPOINT_PIXEL_COLOR};
+												  WAYPOINT_PIXEL_COLOR,
+												  PARTICLE_PIXEL_COLOR};
 
 
 CellMatrix::CellMatrix() : m_width(0), m_height(0)
@@ -114,6 +118,19 @@ bool CellMatrix::IsCellClear(dword row, dword col)
 	}
 	return m_matrix[row][col] == eCellState_clear;
 }
+
+bool CellMatrix::IsCellObstacle(dword row, dword col)
+{
+	if (row > m_height || col > m_width)
+	{
+		printf("row or call are out of bounds\n");
+		printf("row = %d, col = %d, m_height = %d, m_width = %d\n", row, col, m_height, m_width);
+		exit(0);
+	}
+	return m_matrix[row][col] == eCellState_obstacle;
+}
+
+
 
 void CellMatrix::LoadFromFile(const char* mapFileName)
 {
@@ -241,6 +258,21 @@ bool CellMatrix::IsThereObstacleBetweenPoints(Point firstPoint, Point secondPoin
 
 }
 
+CellMatrix& CellMatrix::operator=(CellMatrix cm)
+{
+	m_height = cm.GetHeight();
+	m_width  = cm.GetWidth();
 
+	Resize(cm.GetHeight(), cm.GetWidth());
+
+	int pixelIter = 0;
+	for (dword row = 0; row < GetHeight(); row++)
+	{
+		for (dword col = 0; col < GetWidth(); col++)
+		{
+			SetCell(row, col, cm.GetCell(row,col));
+		}
+	}
+}
 
 

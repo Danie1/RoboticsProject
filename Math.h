@@ -6,7 +6,7 @@ class Math
 public:
 	static double ConvertRadiansToDegrees(double rad)
 	{
-		return (rad * 180) / M_PI + 180;
+		return fmod((rad * 180) / M_PI + 180, 360);
 	}
 
 	static double ConvertDegreesToRadians(double deg)
