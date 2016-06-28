@@ -39,7 +39,7 @@ public:
 		return Location(GetX(), GetY(), GetYaw());
 	}
 
-private:
+public:
 	double GetRobotX();
 	double GetRobotY();
 

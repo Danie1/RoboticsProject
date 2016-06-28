@@ -86,32 +86,28 @@ int main()
 
 	EnlargedMap.SaveToFile("EnlargedMap.png");
 
-	Robot robot("localhost", 6665, robotSize / mapResolution, newPointRoute[newPointRoute.size() - 1]);
+	Robot robot("10.10.245.63", 6665, robotSize / mapResolution, newPointRoute[newPointRoute.size() - 1]);
+//	Robot robot("localhost", 6665, robotSize / mapResolution, newPointRoute[newPointRoute.size() - 1]);
 
+	printf("setOdo to (%f, %f, %d)\r\n", newPointRoute[newPointRoute.size() - 1].GetX(),
+			  newPointRoute[newPointRoute.size() - 1].GetY(),
+			  StartLocation.GetYaw());
 	robot.SetOdometry(newPointRoute[newPointRoute.size() - 1].GetX(),
 					  newPointRoute[newPointRoute.size() - 1].GetY(),
 					  StartLocation.GetYaw());
 	robot.Read();
-
-	Driver driver(robot);
+	printf("getOdo (%f, %f, %f)\r\n", robot.GetRobotX(), robot.GetRobotY(), robot.GetYaw());
 
 	Location currLoc = Location(newPointRoute[newPointRoute.size() - 1].GetX(),
 							    newPointRoute[newPointRoute.size() - 1].GetY(),
 							    StartLocation.GetYaw());
 
-#if 0
-	for (int i=0; i<360; i++)
-	{
-		printf("Deg: %f \r\n", Math::ConvertRadiansToDegrees(Math::ConvertDegreesToRadians(i)));
-	}
 
-	return -1;
-#endif
-
-#if 1
 	Graph partGraph = graph;
 	 // Create the first particles
 	Localization localization(graph);
+
+	Driver driver(robot, localization);
 
     Particle* p = new Particle(robot.GetX(), robot.GetY(), robot.GetYaw(), 0.51);
 
@@ -132,37 +128,13 @@ int main()
 	partGraph.ConvertToMap(EnlargedMap1);
 
 	EnlargedMap1.SaveToFile("initParticle1.png");
-
-	Graph partGraph2 = graph;
-
-
-	localization.Update(0,
-								0,
-								0,
-								robot);
-
-	for (int i = 0; i < localization.particles.size(); ++i)
-	{
-		partGraph2.SetCell(localization.particles[i]->GetY(), localization.particles[i]->GetX(), ecellState_particle);
-	}
-
-	Map EnlargedMap2(mapResolution, robotSize);
-
-	partGraph2.ConvertToMap(EnlargedMap2);
-
-	EnlargedMap2.SaveToFile("initParticle2.png");
-
-	printf("Ended!\r\n");
-	return 0;
-#endif
-
-
-
+	robot.SetSpeed(0,1);
 
 	int i = 0;
 	printf("FinishPointOnGraph (%f,%f)\n", FinishPointOnGraph.GetX(), FinishPointOnGraph.GetY());
 	while (!robot.InRadius(newPointRoute[0]))
 	{
+
 		i++;
 		if (i > newPointRoute.size())
 		{

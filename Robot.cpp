@@ -23,11 +23,8 @@ Robot::Robot(string ip, int port, double RobotSize, Point StartPoint) : m_Curren
 
 void Robot::Read() {
 	// DanielS: Reading twice due to some freakishly odd bug in PlayerStage
-	pc->Read();
-	pc->Read();
-	pc->Read();
-	pc->Read();
-	pc->Read();
+	for (int i = 0; i< 15; i++)
+		pc->Read();
 
 	// Update current location:
 	m_CurrentLocation = Location(GetRobotX(),
@@ -73,6 +70,7 @@ double Robot::GetX()
 
 	double retVal = m_StartPoint.GetX() + (NewX - m_StartPoint.GetX()) * GRAPH_RESOLUTION;
 
+	printf("New X: %f \r\n", retVal);
 	return retVal;
 }
 
@@ -80,7 +78,10 @@ double Robot::GetY()
 {
 	const int GRAPH_RESOLUTION = 10;
 
-	return m_StartPoint.GetY() + (GetRobotY() - m_StartPoint.GetY()) * GRAPH_RESOLUTION;
+	double retVal = m_StartPoint.GetY() + (GetRobotY() - m_StartPoint.GetY()) * GRAPH_RESOLUTION;
+
+	printf("New Y: %f \r\n", retVal);
+	return retVal;
 }
 
 double Robot::GetDistanceFromLaser(int index)
@@ -91,11 +92,13 @@ double Robot::GetDistanceFromLaser(int index)
 //// Private accessors
 double Robot::GetRobotX()
 {
+	printf("Real X: %f \r\n", pp->GetXPos());
 	return pp->GetXPos();
 }
 
 double Robot::GetRobotY()
 {
+	printf("Real Y: %f \r\n", pp->GetYPos());
 	return pp->GetYPos();
 }
 

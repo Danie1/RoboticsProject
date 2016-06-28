@@ -9,15 +9,17 @@
 #define DRIVER_H_
 #include "Robot.h"
 #include "CommonStructs.h"
+#include "LocalizationManager.h"
 
 class Driver {
 private:
 	Robot& m_robot;
+	Localization& m_localization;
 	double distance(double x1, double y1, double x2, double y2);
 	void TurnToDegree(double degree);
 
 public:
-	Driver(Robot& robot);
+	Driver(Robot& robot, Localization& loc);
 	bool MoveToPoint(Point pnt);
 	void TurnToPoint(Point loc);
 	void MoveToWayPoint(Point pnt);

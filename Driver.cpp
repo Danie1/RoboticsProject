@@ -10,7 +10,7 @@
 #include "Math.h"
 #include "Definitions.h"
 
-Driver::Driver(Robot& robot) : m_robot(robot) {
+Driver::Driver(Robot& robot, Localization& loc) : m_robot(robot), m_localization(loc) {
 
 }
 
@@ -40,10 +40,36 @@ bool Driver::MoveToPoint(Point pnt) {
 	Point CurrPoint = Point(m_robot.GetX(), m_robot.GetY());
 	//cout << "x: " << CurrPoint.GetX() << ", y: " << CurrPoint.GetY() << endl;
 
+#ifdef PARTICLES
+	Location oldLocation(m_robot.GetX(), m_robot.GetY(), m_robot.GetYaw());
+	int counter = 0;
+#endif
+
+	Particle* bestPart;
+
 	while (CurrPoint.GetDistanceFrom(pnt)> slowSpeedRange) {
 		m_robot.SetSpeed(linearSpeed, 0);
 
 		m_robot.Read();
+
+#ifdef PARTICLES
+		counter++;
+		if (counter % 5 == 0)
+		{
+			m_localization.Update(oldLocation.GetX() - m_robot.GetX(), oldLocation.GetY() - m_robot.GetY(), oldLocation.GetYaw() - m_robot.GetYaw(), m_robot);
+			oldLocation.SetX(m_robot.GetX());
+			oldLocation.SetY(m_robot.GetY());
+			oldLocation.SetYaw(m_robot.GetYaw());
+			counter = 0;
+		}
+
+		bestPart = m_localization.BestParticle();
+
+		printf("robotLoc (%f,%f,%f). bestPart (%f,%f,%f)\r\n", m_robot.GetX(), m_robot.GetY(), m_robot.GetYaw(),
+																bestPart->GetX(), bestPart->GetY(), bestPart->GetYaw());
+
+#endif
+
 
 		CurrPoint = Point(m_robot.GetX(), m_robot.GetY());
 		printf("FullSpeed: Distance from point is: %f - Point(%f, %f) , Dest Point: (%f, %f) \r\n", CurrPoint.GetDistanceFrom(pnt),
@@ -122,15 +148,15 @@ void Driver::TurnToDegree(double degree)
 
 void Driver::TurnToPoint(Point loc)
 {
-	printf("1: Turning from: (%f, %f), to: (%f, %f)  \r\n", m_robot.GetCurrentLocation().GetX(),
-														 m_robot.GetCurrentLocation().GetY(),
+	printf("1: Turning from: (%f, %f), to: (%f, %f)  \r\n", m_robot.GetX(),
+														 m_robot.GetY(),
 														 loc.GetX(),
 														 loc.GetY());
 	TurnToDegree(m_robot.GetCurrentLocation().GetAngleFrom(loc));
 	m_robot.Read();
 
-	printf("2: Turning from: (%f, %f), to: (%f, %f)  \r\n", m_robot.GetCurrentLocation().GetX(),
-														 m_robot.GetCurrentLocation().GetY(),
+	printf("2: Turning from: (%f, %f), to: (%f, %f)  \r\n", m_robot.GetX(),
+														 m_robot.GetY(),
 														 loc.GetX(),
 														 loc.GetY());
 }
