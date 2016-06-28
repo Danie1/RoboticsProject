@@ -135,6 +135,7 @@ int main()
 
 	Graph partGraph2 = graph;
 
+
 	localization.Update(0,
 								0,
 								0,

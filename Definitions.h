@@ -17,7 +17,7 @@ const double slowSpeedRatio = 0.1;
 #define LOOK_DOWN -90
 
 ///////////////////////////////////////
-#define MAX_PARTICLES_COUNT 0
+#define MAX_PARTICLES_COUNT 100
 #define LOW_BELIEF_MIN 0.5
 #define HIGH_BELIEF_MIN 0.7
 #define BELIEF_MAGIC_NUMBER 0.9

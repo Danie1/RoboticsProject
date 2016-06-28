@@ -67,7 +67,7 @@ void Particle::Update(float xDelta,
 		float predictionBelif = ProbabilityByMovement(xDelta, yDelta, yawDelta);// * this->belief;
 		float probabilityByScan = ProbabilityByLaserScan(this->xDelta, this->yDelta, this->yawDelta, map, robot);
 		printf("predictionBelif = %f. probabilityByScan = %f\n", predictionBelif, probabilityByScan);
-		this->belief = probabilityByScan * predictionBelif * BELIEF_MAGIC_NUMBER;
+		this->belief = probabilityByScan * predictionBelif;
     }
 }
 
@@ -132,27 +132,27 @@ float Particle::ProbabilityByLaserScan(float xRobotDelta,
 		if (distance >=40)
 		{
 			// let's move to the next sample
-//			continue;
+			continue;
 		}
 
 		totalHits++;
 		const double RANGE = 240;
 		const double RATIO = RANGE / 666;
-		double StartingDegree = 360 - (180 - (360 - RANGE)) / 2;
+		double StartingDegree = (180 - (360 - RANGE)) / 2 + 180;
 		double indexDegree = fmod(StartingDegree + ((double(index) * RATIO)) + 360, 360);
 		//double indexDegree = (index) * 0.36 - 120;
 		//double indexRadian = (indexDegree) *M_PI / 180;
 		//double obstacleRadian = indexRadian + Math::ConvertDegreesToRadians(robot.GetYaw());
-		double obstacleRadian = Math::ConvertDegreesToRadians(fmod(indexDegree + robot.GetYaw() + 360, 360));
+		double obstacleRadian = Math::ConvertDegreesToRadians(fmod(indexDegree + robot.GetYaw() + 30 + 360, 360));
 
 		double obstacleX = distance * cos(obstacleRadian) + xDelta;
+		obstacleX = 2*xDelta - obstacleX;
 		double obstacleY = distance * sin(obstacleRadian) + yDelta;
 
-		gr.SetCell(obstacleY, obstacleX, ecellState_particle);
 
 		// Check if we missed boundaries.
-		if ((obstacleX) < 0 || (obstacleX) >= graph.GetWidth() -10 ||
-			 obstacleY < 0 || (obstacleY) >= graph.GetHeight() -10)
+		if ((obstacleX) < 0 || (obstacleX) >= graph.GetWidth() ||
+			 obstacleY < 0 || (obstacleY) >= graph.GetHeight())
 		{
 			continue;
 		}
@@ -161,6 +161,11 @@ float Particle::ProbabilityByLaserScan(float xRobotDelta,
 		if (graph.IsCellObstacle(obstacleY, obstacleX))
 		{
 			correctHits++;
+			gr.SetCell(obstacleY, obstacleX, ecellState_particle);
+		}
+		else
+		{
+			gr.SetCell(obstacleY, obstacleX, eCellState_finish);
 		}
 
 	}
