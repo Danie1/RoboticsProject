@@ -31,6 +31,8 @@ private:
 	void BreedParticle(Particle* particle, int ChildCount, float dExpansionRadius, float dYawRange, vector<Particle*>& childs);
 
 public:
+	void PrintParticlesOnMap(const char* szFileName);
+
 	void initParticles(int amount);
 	vector<Particle*> particles;
 	bool CreateParticles(float xDelta, float yDelta, float yawDelta, float belief, float expansionRadius, float yawRange, int childsCount);

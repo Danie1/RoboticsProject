@@ -40,7 +40,7 @@ bool Driver::MoveToPoint(Point pnt) {
 	Point CurrPoint = Point(m_robot.GetX(), m_robot.GetY());
 	//cout << "x: " << CurrPoint.GetX() << ", y: " << CurrPoint.GetY() << endl;
 
-#ifdef PARTICLES
+#ifdef ENABLE_PARTICLES
 	Location oldLocation(m_robot.GetX(), m_robot.GetY(), m_robot.GetYaw());
 	int counter = 0;
 #endif
@@ -52,7 +52,7 @@ bool Driver::MoveToPoint(Point pnt) {
 
 		m_robot.Read();
 
-#ifdef PARTICLES
+#ifdef ENABLE_PARTICLES
 		counter++;
 		if (counter % 5 == 0)
 		{
@@ -110,6 +110,27 @@ bool Driver::MoveToPoint(Point pnt) {
 
 void Driver::TurnToDegree(double degree)
 {
+	auto IsBeyondDegree = [&](double degree, double speed)
+							{
+								// Check if turning left
+								if (speed > 0)
+								{
+									if (m_robot.GetYaw() > degree)
+									{
+										return true;
+									}
+								}
+								else
+								{
+									if (m_robot.GetYaw() < degree)
+									{
+										return true;
+									}
+								}
+
+								return false;
+							};
+
 	double speed;
 
 	//abort robot to move if Yaw is same
@@ -121,16 +142,21 @@ void Driver::TurnToDegree(double degree)
 
 	double DegreeDelta = fmod((CurrRobotYaw - degree) + 360, 360);
 
-	printf("Curr at: %f, Turning to: %f, by: %f \r\n", CurrRobotYaw, degree, DegreeDelta);
-
+	// Check whether to turn left or right
 	if (DegreeDelta < 180.0)
+	{
 		speed = RIGHT_ANGULAR_SPEED;
+		printf("Curr at: %f, Turning to: %f, by: %f \r\n", CurrRobotYaw, degree, DegreeDelta);
+	}
 	else
+	{
 		speed = LEFT_ANGULAR_SPEED;
+		printf("Curr at: %f, Turning to: %f, by: %f \r\n", CurrRobotYaw, degree, 360 - DegreeDelta);
+	}
 
 	m_robot.SetSpeed(0,speed);
 
-	while(abs(m_robot.GetYaw() - degree) > 4)
+	while(abs(m_robot.GetYaw() - degree) > yawTolerance && !IsBeyondDegree(degree, speed))
 	{
 		m_robot.Read();
 		printf("fast: Curr Robot Yaw: %f || Degree: %f\r\n", m_robot.GetYaw(), degree);
@@ -138,11 +164,12 @@ void Driver::TurnToDegree(double degree)
 
 	//slow down before reaching angle target
 	m_robot.SetSpeed(0,speed*0.2);
-	while(abs(m_robot.GetYaw() - degree) > 0.4)
+	while(abs(m_robot.GetYaw() - degree) > slowSpeedYawRange && !IsBeyondDegree(degree, speed))
 	{
 		m_robot.Read();
 		printf("slow: Curr Robot Yaw: %f || Degree: %f\r\n", m_robot.GetYaw(), degree);
 	}
+
 	m_robot.SetSpeed(0,0);
 }
 

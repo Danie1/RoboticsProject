@@ -19,12 +19,12 @@ class Robot {
 private:
 	PlayerClient *pc;
 	Position2dProxy *pp;
-	double m_RobotSizeInPixel;
+
 public:
 	LaserProxy *lp;
 
 public:
-	Robot(string ip, int port, double RobotSize, Point StartPoint);
+	Robot(string ip, int port, Point StartPoint);
 	void Read();
 	double GetX();
 	double GetY();

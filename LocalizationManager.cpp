@@ -3,7 +3,7 @@
  */
 
 #include "LocalizationManager.h"
-#include "Definitions.h"
+#include "ConfigurationManager.h"
 
 #include <ctime>
 
@@ -215,4 +215,21 @@ void Localization::ChildsToParticles(vector<Particle*> childs)
 	{
 		particles.push_back(childs[i]);
 	}
+}
+
+void Localization::PrintParticlesOnMap(const char* szFileName)
+{
+	Graph printedGraph = m_graph;
+
+	for (int i = 0; i < particles.size(); ++i)
+	{
+		printedGraph.SetCell(particles[i]->GetY(), particles[i]->GetX(), ecellState_particle);
+	}
+
+	Map EnlargedPrintedMap(ConfigurationManager::Configuration().GetMapResolution(),
+						   ConfigurationManager::Configuration().GetRobotSize());
+
+	printedGraph.ConvertToMap(EnlargedPrintedMap);
+
+	EnlargedPrintedMap.SaveToFile(szFileName);
 }

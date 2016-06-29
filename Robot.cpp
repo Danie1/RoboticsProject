@@ -11,14 +11,13 @@
 
 #define MINIMUM_DISTANCE_FROM_POINT 10
 
-Robot::Robot(string ip, int port, double RobotSize, Point StartPoint) : m_CurrentLocation(0,0,0),
+Robot::Robot(string ip, int port, Point StartPoint) : m_CurrentLocation(0,0,0),
 																		m_StartPoint(StartPoint)
 {
 	pc = new PlayerClient(ip, port);
 	pp = new Position2dProxy(pc);
 	lp = new LaserProxy(pc);
 	pp->SetMotorEnable(true);
-	m_RobotSizeInPixel = RobotSize;
 }
 
 void Robot::Read() {
@@ -37,9 +36,7 @@ bool Robot::InRadius(Point pnt)
 {
 	double distanceFromPnt = GetCurrentLocation().GetDistanceFrom(pnt);
 
-	printf("pnt (%f, %f) distance form currLocation (%f , %f) is %f. ok is %f\n", pnt.GetX(), pnt.GetY(), GetCurrentLocation().GetX(), GetCurrentLocation().GetY(), distanceFromPnt, tolerance);
 	return GetCurrentLocation().GetDistanceFrom(pnt) <= tolerance;
-//	return m_CurrentLocation.GetDistanceFrom(pnt) <= MINIMUM_DISTANCE_FROM_POINT;
 }
 
 double Robot::GetYaw()
@@ -47,16 +44,19 @@ double Robot::GetYaw()
 	return Math::ConvertRadiansToDegrees(pp->GetYaw());
 }
 
-void Robot::SetSpeed(double linearSpeed, double angularSpeed) {
+void Robot::SetSpeed(double linearSpeed, double angularSpeed)
+{
 	pp->SetSpeed(linearSpeed, angularSpeed);
 }
 
-void Robot::SetOdometry(double x, double y, double yaw) {
+void Robot::SetOdometry(double x, double y, double yaw)
+{
 	for (int i = 0; i< 15; i++)
 		pp->SetOdometry(x, y, Math::ConvertDegreesToRadians(yaw));
 }
 
-Robot::~Robot() {
+Robot::~Robot()
+{
 	delete lp;
 	delete pp;
 	delete pc;
@@ -70,7 +70,6 @@ double Robot::GetX()
 
 	double retVal = m_StartPoint.GetX() + (NewX - m_StartPoint.GetX()) * GRAPH_RESOLUTION;
 
-	printf("New X: %f \r\n", retVal);
 	return retVal;
 }
 
@@ -80,7 +79,6 @@ double Robot::GetY()
 
 	double retVal = m_StartPoint.GetY() + (GetRobotY() - m_StartPoint.GetY()) * GRAPH_RESOLUTION;
 
-	printf("New Y: %f \r\n", retVal);
 	return retVal;
 }
 
@@ -92,13 +90,11 @@ double Robot::GetDistanceFromLaser(int index)
 //// Private accessors
 double Robot::GetRobotX()
 {
-	printf("Real X: %f \r\n", pp->GetXPos());
 	return pp->GetXPos();
 }
 
 double Robot::GetRobotY()
 {
-	printf("Real Y: %f \r\n", pp->GetYPos());
 	return pp->GetYPos();
 }
 
