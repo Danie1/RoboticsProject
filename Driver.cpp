@@ -54,9 +54,12 @@ bool Driver::MoveToPoint(Point pnt) {
 
 #ifdef ENABLE_PARTICLES
 		counter++;
-		if (counter % 5 == 0)
+		if (counter % 1 == 0)
 		{
-			m_localization.Update(oldLocation.GetX() - m_robot.GetX(), oldLocation.GetY() - m_robot.GetY(), oldLocation.GetYaw() - m_robot.GetYaw(), m_robot);
+			printf("Got HERE! \r\n");
+			m_localization.Update(m_robot.GetX() - oldLocation.GetX(),
+								  m_robot.GetY() - oldLocation.GetY(),
+								  m_robot.GetYaw() - oldLocation.GetYaw(), m_robot);
 			oldLocation.SetX(m_robot.GetX());
 			oldLocation.SetY(m_robot.GetY());
 			oldLocation.SetYaw(m_robot.GetYaw());
@@ -67,6 +70,10 @@ bool Driver::MoveToPoint(Point pnt) {
 
 		printf("robotLoc (%f,%f,%f). bestPart (%f,%f,%f)\r\n", m_robot.GetX(), m_robot.GetY(), m_robot.GetYaw(),
 																bestPart->GetX(), bestPart->GetY(), bestPart->GetYaw());
+
+		//m_robot.SetOdometry(bestPart->GetX(), bestPart->GetY(), m_robot.GetYaw());
+
+		//m_robot.Read();
 
 #endif
 

@@ -26,3 +26,14 @@ std::string FilesManager::GetGraphRouteFile()
 {
 	return std::string("Images/RouteImage.png");
 }
+
+std::string FilesManager::GetBestParticleFOVFile()
+{
+	char buff[100];
+	snprintf(buff, sizeof(buff), "%s%d%s", "Images/BestParticleStage", m_BestNextParticle, ".png");
+	std::string buffAsStdStr = buff;
+
+	m_BestNextParticle++;
+
+	return buffAsStdStr;
+}

@@ -16,10 +16,14 @@ public:
 
 	std::string GetNextParticleFile();
 
+	std::string GetBestParticleFOVFile();
+
 	std::string GetMapRouteFile();
 
 	std::string GetGraphRouteFile();
 
 private:
 	int m_NextParticle;
+
+	int m_BestNextParticle;
 };

@@ -7,7 +7,7 @@
 
 #include <ctime>
 
-Localization::Localization(Graph& graph) : m_graph(graph)
+Localization::Localization(Graph& graph, Robot& robot) : m_graph(graph), m_robot(robot)
 {
 	xDelta = yDelta = yawDelta = 0;
 }
@@ -100,7 +100,7 @@ void Localization::Update(double deltaX,
 		// If belief is too low - remove the particle
 		if ((belif <= LOW_BELIEF_MIN && particles.size() != 0) || belif == 0)
 		{
-			printf("particle removed\n");
+			//printf("particle removed\n");
 			childsToRemove.push_back(i);
 		}
 		// If belief is high - high breed
@@ -203,6 +203,8 @@ Particle* Localization::BestParticle()
 	xDelta = bestParticle->xDelta;
 	yDelta = bestParticle->yDelta;
 	yawDelta = bestParticle->yawDelta;
+
+	bestParticle->PrintParticleFOV(m_graph, m_robot);
 
 	return bestParticle;
 }

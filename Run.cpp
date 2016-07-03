@@ -24,6 +24,8 @@
 #include "FilesManager.h"
 #include "RouteMngr.h"
 
+#include <unistd.h>
+
 void PrintEnlargedGraph(const char* szFilename, Graph& graph)
 {
 	Map EnlargedMap(ConfigurationManager::Configuration().GetMapResolution(),
@@ -80,11 +82,11 @@ int main()
 							    ConfigurationManager::Configuration().GetStartLocation().GetYaw());
 
 	 // Create the first particles
-	Localization localization(graph);
+	Localization localization(graph, robot);
 
 	Driver driver(robot, localization);
 
-    Particle* p = new Particle(robot.GetX(), robot.GetY(), robot.GetYaw(), 0.51);
+    Particle* p = new Particle(robot.GetX(), robot.GetY(), robot.GetYaw(), 1);
 
 	localization.particles.push_back(p);
 
@@ -103,11 +105,12 @@ int main()
 		i++;
 		if (i > newPointRoute.size())
 		{
-			printf("we go through all waypoints and still the robot didn't reach his destination :(\n");
+			printf("Failed to reach final destination. \r\n");
 			break;
 		}
 		driver.MoveToWayPoint(newPointRoute[newPointRoute.size() - i]);
-		cout << "Moved to next waypoint!. press enter to continue" << endl;
+
+		printf("Successfully moved to next waypoint. \r\n");
 
 		localization.PrintParticlesOnMap(FilesManager::Get().GetNextParticleFile().c_str());
 	}

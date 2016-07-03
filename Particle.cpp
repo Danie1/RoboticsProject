@@ -7,6 +7,8 @@
 using namespace PlayerCc;
 #include <math.h>
 #include "Definitions.h"
+#include "FilesManager.h"
+#include "ConfigurationManager.h"
 
 Particle::Particle(float xDelta, float yDelta, float yawDelta, float belief)
 {
@@ -46,7 +48,7 @@ void Particle::Update(float xDelta,
 {
 	this->xDelta += xDelta;
     this->yDelta += yDelta;
-    this->yawDelta += yawDelta;
+    this->yawDelta = fmod(this->yawDelta + yawDelta, 360);
 
     double probByRobotDistance = 1 / sqrt(pow(this->yDelta - robot.GetY(), 2) - pow(this->xDelta - robot.GetX(), 2));
 
@@ -63,11 +65,16 @@ void Particle::Update(float xDelta,
     }
     else
     {
-    	// Calculating the belief of the particle, by using the probability by movement and laser scan.
-		float predictionBelif = ProbabilityByMovement(xDelta, yDelta, yawDelta);// * this->belief;
-		float probabilityByScan = ProbabilityByLaserScan(this->xDelta, this->yDelta, this->yawDelta, map, robot);
-		printf("predictionBelif = %f. probabilityByScan = %f\n", predictionBelif, probabilityByScan);
+    	// Check if the distance between the particle and the robot makes sense.
+		float predictionBelif = ProbabilityByMovement(abs(robot.GetX() - this->xDelta),
+													  abs(robot.GetY() - this->yDelta),
+													  abs(robot.GetYaw() - this->yawDelta));// * this->belief;
+
+		// Check if the obstacles the robot sees match the particle.
+		float probabilityByScan = ProbabilityByLaserScan(map, robot);
 		this->belief = probabilityByScan * predictionBelif;
+		printf("predictionBelif = %f. probabilityByScan = %f => Belief: %f \r\n", predictionBelif, probabilityByScan, this->belief);
+
     }
 }
 
@@ -111,16 +118,12 @@ float Particle::ProbabilityByMovement(float xDelta, float yDelta, float yawDelta
 }
 
 // Get the probability of this particle by using the laser scan.
-float Particle::ProbabilityByLaserScan(float xRobotDelta,
-		float yRobotDelta,
-		float yawRobotDelta,
-		Graph& graph,
-		Robot& robot)
+float Particle::ProbabilityByLaserScan(Graph& graph, Robot& robot)
 {
+	printf("The particle/robot is at: (%f, %f). The robot is at: (%f, %f) \r\n", xDelta, yDelta, robot.GetX(), robot.GetY());
+
 	float totalHits = 0;
 	float correctHits = 0;
-
-	Graph gr = graph;
 
 	// Measures the position of the
 	for (unsigned int index = 0; index < LASER_COUNT; index++)
@@ -136,14 +139,12 @@ float Particle::ProbabilityByLaserScan(float xRobotDelta,
 		}
 
 		totalHits++;
-		const double RANGE = 240;
-		const double RATIO = RANGE / 666;
+
+		const double RANGE = LASER_SCOPE;
+		const double RATIO = RANGE / LASER_COUNT;
 		double StartingDegree = (180 - (360 - RANGE)) / 2 + 180;
 		double indexDegree = fmod(StartingDegree + ((double(index) * RATIO)) + 360, 360);
-		//double indexDegree = (index) * 0.36 - 120;
-		//double indexRadian = (indexDegree) *M_PI / 180;
-		//double obstacleRadian = indexRadian + Math::ConvertDegreesToRadians(robot.GetYaw());
-		double obstacleRadian = Math::ConvertDegreesToRadians(fmod(indexDegree + robot.GetYaw() + 30 + 360, 360));
+		double obstacleRadian = Math::ConvertDegreesToRadians(fmod(indexDegree + robot.GetYaw() + (180 - (360 - RANGE)) / 2 + 360, 360));
 
 		double obstacleX = distance * cos(obstacleRadian) + xDelta;
 		obstacleX = 2*xDelta - obstacleX;
@@ -161,21 +162,76 @@ float Particle::ProbabilityByLaserScan(float xRobotDelta,
 		if (graph.IsCellObstacle(obstacleY, obstacleX))
 		{
 			correctHits++;
-			gr.SetCell(obstacleY, obstacleX, ecellState_particle);
 		}
-		else
-		{
-			gr.SetCell(obstacleY, obstacleX, eCellState_finish);
-		}
-
 	}
 
-	gr.SaveToFile("OrGafni.png");
 	if (totalHits == 0)
 		return 0;
 	else
 		return correctHits/totalHits;
+}
 
+void Particle::PrintParticleFOV(Graph& graph, Robot& robot)
+{
+	Graph printedgraph = graph;
+
+	// Measures the position of the
+	for (unsigned int index = 0; index < LASER_COUNT; index++)
+	{
+		double distance = robot.GetDistanceFromLaser(index) * 10;
+
+		const double RANGE = LASER_SCOPE;
+		const double RATIO = RANGE / LASER_COUNT;
+		double StartingDegree = (180 - (360 - RANGE)) / 2 + 180;
+		double indexDegree = fmod(StartingDegree + ((double(index) * RATIO)) + 360, 360);
+		double obstacleRadian = Math::ConvertDegreesToRadians(fmod(indexDegree + robot.GetYaw() + 30 + 360, 360));
+
+		double obstacleX = distance * cos(obstacleRadian) + xDelta;
+		obstacleX = 2*xDelta - obstacleX;
+		double obstacleY = distance * sin(obstacleRadian) + yDelta;
+
+		bool fMarkAsHit = false;
+
+		// Draw far away pixels as obstacles.
+		if (distance >=40)
+		{
+			fMarkAsHit = true;
+		}
+
+		// Check if we missed boundaries.
+		if ((obstacleX) < 0 || (obstacleX) >= graph.GetWidth() ||
+			 obstacleY < 0 || (obstacleY) >= graph.GetHeight())
+		{
+			continue;
+		}
+
+		// Check if there's a hit on an obstacle.
+		if (graph.IsCellObstacle(obstacleY, obstacleX))
+		{
+			printedgraph.SetCell(obstacleY, obstacleX, ecellState_particle);
+		}
+		else if(fMarkAsHit)
+		{
+			printedgraph.SetCell(obstacleY, obstacleX, ecellState_waypoint);
+		}
+		else
+		{
+			printedgraph.SetCell(obstacleY, obstacleX, eCellState_finish);
+		}
+
+	}
+
+	printf("The rob loc: (%f, %f) ... particle log: (%f, %f) \r\n", robot.GetX(), robot.GetY(), this->GetX(), this->GetY());
+
+	printedgraph.SetCell(this->xDelta, this->yDelta, eCellState_start);
+
+
+	Map EnlargedPrintedMap(ConfigurationManager::Configuration().GetMapResolution(),
+						   ConfigurationManager::Configuration().GetRobotSize());
+
+	printedgraph.ConvertToMap(EnlargedPrintedMap);
+
+	EnlargedPrintedMap.SaveToFile(FilesManager::Get().GetBestParticleFOVFile().c_str());
 }
 
 float Particle::GetX()

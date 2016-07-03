@@ -19,6 +19,7 @@ class Particle;
 class Localization {
 private:
 	Graph& m_graph;
+	Robot& m_robot;
 
 
 	float xDelta;
@@ -37,7 +38,7 @@ public:
 	vector<Particle*> particles;
 	bool CreateParticles(float xDelta, float yDelta, float yawDelta, float belief, float expansionRadius, float yawRange, int childsCount);
 	double eval(Robot& robot, Graph& graph);
-	Localization(Graph& map);
+	Localization(Graph& map, Robot& robot);
 	void Update(double xDelta, double yDelta, double yawDelta, Robot& robot);
 	Particle* BestParticle();
 

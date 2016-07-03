@@ -24,14 +24,11 @@ public:
 	float belief;
 	int age;
 
+	void PrintParticleFOV(Graph& graph, Robot& robot);
 
 	float Random(float min, float max);
 	float ProbabilityByMovement(float xDelta, float yDelta, float yawDelta);
-	float ProbabilityByLaserScan(float xDelta,
-								 float yDelta,
-								 float yawDelta,
-								 Graph& graph,
-								 Robot& rob);
+	float ProbabilityByLaserScan(Graph& graph, Robot& robot);
 
 	void Respawn(Graph& map);
 	Particle(float xDelta, float yDelta, float yawDelta, float belief);
