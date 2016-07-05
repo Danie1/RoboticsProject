@@ -20,7 +20,8 @@ class Localization {
 private:
 	Graph& m_graph;
 	Robot& m_robot;
-
+	//Location m_StartLocation;
+	//Location m_CurrentLocation;
 
 	float xDelta;
 	float yDelta;
@@ -30,6 +31,8 @@ private:
 	void ChildsToParticles(vector<Particle*> childs);
 	void BreedParticle(Particle* particle, int dwChildCount, vector<Particle*>& childs);
 	void BreedParticle(Particle* particle, int ChildCount, float dExpansionRadius, float dYawRange, vector<Particle*>& childs);
+	//Location GetCurrentLocationFromParticle();
+
 
 public:
 	void PrintParticlesOnMap(const char* szFileName);

@@ -69,8 +69,12 @@ int main()
 
 	PrintEnlargedGraph(FilesManager::Get().GetMapRouteFile().c_str() ,graph);
 
-	//Robot robot("10.10.245.63", 6665, newPointRoute[newPointRoute.size() - 1]);
-	Robot robot("localhost", 6665, newPointRoute[newPointRoute.size() - 1]);
+	Location RobotStartLocation = Location(newPointRoute[newPointRoute.size() - 1].GetX(),
+										   newPointRoute[newPointRoute.size() - 1].GetY(),
+										   ConfigurationManager::Configuration().GetStartLocation().GetYaw());
+
+	Robot robot("10.10.245.63", 6665, RobotStartLocation);
+//	Robot robot("localhost", 6665, RobotStartLocation);
 
 	robot.SetOdometry(newPointRoute[newPointRoute.size() - 1].GetX(),
 					  newPointRoute[newPointRoute.size() - 1].GetY(),
@@ -108,7 +112,7 @@ int main()
 			printf("Failed to reach final destination. \r\n");
 			break;
 		}
-		driver.MoveToWayPoint(newPointRoute[newPointRoute.size() - i]);
+		driver.MoveToWayPoint(newPointRoute[newPointRoute.size() - i], newPointRoute[newPointRoute.size() - i + 1]);
 
 		printf("Successfully moved to next waypoint. \r\n");
 

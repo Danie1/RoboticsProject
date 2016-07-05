@@ -65,7 +65,7 @@ void CellMatrix::SetCell(int row, int col, ECellState eType)
 
 bool CellMatrix::IsNearObstacle(dword row, dword col)
 {
-	int const nearRadious = 1;
+	int const nearRadious = 3;
 	for (int i = row - nearRadious; i <= row + nearRadious; i++)
 	{
 		for (int j = col - nearRadious; j <= col + nearRadious; j++)
@@ -253,6 +253,34 @@ bool CellMatrix::IsThereObstacleBetweenPoints(Point firstPoint, Point secondPoin
 //			m_matrix[yVal][xVal] = ecellState_debug;
 		}
 	}
+
+
+//	if (firstPoint.GetY() < secondPoint.GetY())
+//	{
+//		for (int yVal = firstPoint.GetY(); yVal <= secondPoint.GetY(); yVal++)
+//		{
+//			int xVal = yVal - (firstPoint.get) m*xVal -m*firstPoint.GetX() + firstPoint.GetY();
+//			if (m_matrix[yVal][xVal] == eCellState_obstacle)
+//			{
+//				return true;
+//			}
+////			m_matrix[yVal][xVal] = ecellState_debug;
+//		}
+//	}
+//	else
+//	{
+//		for (int xVal = secondPoint.GetX(); xVal <= firstPoint.GetX(); xVal++)
+//		{
+//			int yVal = m*xVal -m*firstPoint.GetX() + firstPoint.GetY();
+//			if (m_matrix[yVal][xVal] == eCellState_obstacle)
+//			{
+//				return true;
+//			}
+////			m_matrix[yVal][xVal] = ecellState_debug;
+//		}
+//	}
+
+
 
 	return false;
 

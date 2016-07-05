@@ -20,9 +20,9 @@ private:
 
 public:
 	Driver(Robot& robot, Localization& loc);
-	bool MoveToPoint(Point pnt);
+	bool MoveToPoint(Point pnt, Point CurrWayPoint);
 	void TurnToPoint(Point loc);
-	void MoveToWayPoint(Point pnt);
+	void MoveToWayPoint(Point pnt, Point CurrWayPoint);
 	virtual ~Driver();
 };
 

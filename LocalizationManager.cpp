@@ -10,6 +10,8 @@
 Localization::Localization(Graph& graph, Robot& robot) : m_graph(graph), m_robot(robot)
 {
 	xDelta = yDelta = yawDelta = 0;
+	//m_StartLocation = Location(robot.GetX(), robot.GetY(), robot.GetYaw());
+	//m_CurrentLocation = Location(robot.GetX(), robot.GetY(), robot.GetYaw());
 }
 
 // Create a new particle.
@@ -91,11 +93,11 @@ void Localization::Update(double deltaX,
 	{
 
 		Particle* particle = particles[i];
-		printf("handle particle index %d (%f,%f)\n", i, particle->GetX(), particle->GetY());
+		//printf("handle particle index %d (%f,%f)\n", i, particle->GetX(), particle->GetY());
 		particle->Update(deltaX, deltaY, deltaYaw, m_graph, robot);
 		float belif = particle->belief;
 
-		printf("particle belif %f\n", belif);
+		//printf("particle belif %f\n", belif);
 
 		// If belief is too low - remove the particle
 		if ((belif <= LOW_BELIEF_MIN && particles.size() != 0) || belif == 0)
@@ -107,24 +109,24 @@ void Localization::Update(double deltaX,
 		else if (belif >= HIGH_BELIEF_MIN &&
 				 particles.size() - childsToRemove.size() < MAX_PARTICLES_COUNT)
 		{
-			printf("belif high.\n");
+			//printf("belif high.\n");
 
 			Particle* newParticle = particle->CreateChild(1, 1, m_graph);
-			printf("newParticle created (%f,%f).\n", newParticle->GetX(), newParticle->GetY());
+			//printf("newParticle created (%f,%f).\n", newParticle->GetX(), newParticle->GetY());
 			particles.push_back(newParticle);
 
 			newParticle = particle->CreateChild(1, 1, m_graph);
-			printf("newParticle created (%f,%f).\n", newParticle->GetX(), newParticle->GetY());
+			//printf("newParticle created (%f,%f).\n", newParticle->GetX(), newParticle->GetY());
 			particles.push_back(newParticle);
 		}
 		// If belief is normal - normal breed
 		else if (particles.size() - childsToRemove.size() < MAX_PARTICLES_COUNT)
 		{
-			printf("belif normal.\n");
+			//printf("belif normal.\n");
 			particle->age++;
 
 			Particle* newParticle = particle->CreateChild(10, 2, m_graph);
-			printf("newParticle created (%f,%f).\n", newParticle->GetX(), newParticle->GetY());
+			//printf("newParticle created (%f,%f).\n", newParticle->GetX(), newParticle->GetY());
 			particles.push_back(newParticle);
 		}
 
@@ -145,11 +147,11 @@ void Localization::Update(double deltaX,
 		}
 	}
 
-	printf("new particles!!/n");
+	//printf("new particles!!/n");
 	// if we removed too many particles add some
-	while(particles.size() < MAX_PARTICLES_COUNT) {
+	while(particles.size() < MIN_PARTICLES_COUNT) {
 		Particle* newParticle = bestP->CreateChild(20, 3, m_graph);
-		printf("newParticle created (%f,%f).\n", newParticle->GetX(), newParticle->GetY());
+		//printf("newParticle created (%f,%f).\n", newParticle->GetX(), newParticle->GetY());
 		particles.push_back(newParticle);
 	}
 }
@@ -235,3 +237,29 @@ void Localization::PrintParticlesOnMap(const char* szFileName)
 
 	EnlargedPrintedMap.SaveToFile(szFileName);
 }
+#if 0
+Location Localization::GetCurrentLocationFromParticle()
+{
+	Particle* bestPart;
+
+	static Location oldLocation = m_StartLocation;
+
+	Update(m_CurrentLocation.GetX() - oldLocation.GetX(),
+			m_CurrentLocation.GetY() - oldLocation.GetY(),
+			m_CurrentLocation.GetYaw() - oldLocation.GetYaw(), m_robot);
+	oldLocation = m_CurrentLocation;
+	//oldLocation.SetX(m_robot.GetX());
+	//oldLocation.SetY(m_robot.GetY());
+	//oldLocation.SetYaw(m_robot.GetYaw());
+
+	bestPart = BestParticle();
+
+	Location ParticleLocation = Location(bestPart->GetX(), bestPart->GetY(), bestPart->GetYaw());
+
+	MOVING_MSG("robotLoc (%f,%f,%f). bestPart (%f,%f,%f)\r\n", m_robot.GetX(), m_robot.GetY(), m_robot.GetYaw(),
+															bestPart->GetX(), bestPart->GetY(), bestPart->GetYaw());
+
+	m_CurrentLocation = ParticleLocation;
+	return ParticleLocation;
+}
+#endif

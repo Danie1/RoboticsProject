@@ -55,12 +55,12 @@ void Particle::Update(float xDelta,
     // if the particle is out of the map or on obstacle
     if ((this->xDelta) < 0 || (this->xDelta) >= map.GetWidth() -10 ||
         this->yDelta < 0 || (this->yDelta) >= map.GetHeight() -10){
-    	printf("Respawn outside the map. \r\n");
+    	//printf("Respawn outside the map. \r\n");
     	this->Respawn(map);
     }
     else if (map.IsCellObstacle(this->yDelta, this->xDelta))
     {
-    	printf("Respawn due to obstacle \r\n");
+    	//printf("Respawn due to obstacle \r\n");
     	this->Respawn(map);
     }
     else
@@ -73,7 +73,7 @@ void Particle::Update(float xDelta,
 		// Check if the obstacles the robot sees match the particle.
 		float probabilityByScan = ProbabilityByLaserScan(map, robot);
 		this->belief = probabilityByScan * predictionBelif;
-		printf("predictionBelif = %f. probabilityByScan = %f => Belief: %f \r\n", predictionBelif, probabilityByScan, this->belief);
+		//printf("predictionBelif = %f. probabilityByScan = %f => Belief: %f \r\n", predictionBelif, probabilityByScan, this->belief);
 
     }
 }
@@ -120,13 +120,11 @@ float Particle::ProbabilityByMovement(float xDelta, float yDelta, float yawDelta
 // Get the probability of this particle by using the laser scan.
 float Particle::ProbabilityByLaserScan(Graph& graph, Robot& robot)
 {
-	printf("The particle/robot is at: (%f, %f). The robot is at: (%f, %f) \r\n", xDelta, yDelta, robot.GetX(), robot.GetY());
-
 	float totalHits = 0;
 	float correctHits = 0;
 
 	// Measures the position of the
-	for (unsigned int index = 0; index < LASER_COUNT; index++)
+	for (unsigned int index = 200; index < 400; index++)
 	{
 		double distance = robot.GetDistanceFromLaser(index) * 10;
 
@@ -173,6 +171,10 @@ float Particle::ProbabilityByLaserScan(Graph& graph, Robot& robot)
 
 void Particle::PrintParticleFOV(Graph& graph, Robot& robot)
 {
+	printf("Particle: (%f, %f, %f) -- Robot: (%f, %f, %f) -- Belief: %f\r\n",
+	    		this->xDelta, this->yDelta, this->yawDelta,
+	    		robot.GetX(), robot.GetY(), robot.GetYaw(), this->belief);
+
 	Graph printedgraph = graph;
 
 	// Measures the position of the
@@ -220,10 +222,7 @@ void Particle::PrintParticleFOV(Graph& graph, Robot& robot)
 		}
 
 	}
-
-	printf("The rob loc: (%f, %f) ... particle log: (%f, %f) \r\n", robot.GetX(), robot.GetY(), this->GetX(), this->GetY());
-
-	printedgraph.SetCell(this->xDelta, this->yDelta, eCellState_start);
+	printedgraph.SetCell(this->yDelta, this->xDelta, eCellState_start);
 
 
 	Map EnlargedPrintedMap(ConfigurationManager::Configuration().GetMapResolution(),

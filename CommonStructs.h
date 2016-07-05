@@ -67,10 +67,10 @@ private:
 struct Location : public Point
 {
 public:
-	Location(double X, double Y, int YAW) : Point(X, Y), m_YAW(YAW) {}
+	Location(double X, double Y, double YAW) : Point(X, Y), m_YAW(YAW) {}
 
-	int GetYaw() {return m_YAW;}
-	void SetYaw(int YAW) { m_YAW = YAW;}
+	double GetYaw() {return m_YAW;}
+	void SetYaw(double YAW) { m_YAW = YAW;}
 
 	Location& operator=(Location other) // copy assignment
 	{
@@ -95,5 +95,5 @@ public:
 	}
 
 private:
-	int  m_YAW;
+	double  m_YAW;
 };

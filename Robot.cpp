@@ -11,8 +11,8 @@
 
 #define MINIMUM_DISTANCE_FROM_POINT 10
 
-Robot::Robot(string ip, int port, Point StartPoint) : m_CurrentLocation(0,0,0),
-																		m_StartPoint(StartPoint)
+Robot::Robot(string ip, int port, Location StartLocation) : m_CurrentLocation(0,0,0),
+															m_StartLocation(StartLocation)
 {
 	pc = new PlayerClient(ip, port);
 	pp = new Position2dProxy(pc);
@@ -28,7 +28,7 @@ void Robot::Read() {
 	// Update current location:
 	m_CurrentLocation = Location(GetRobotX(),
 								 GetRobotY(),
-								 Math::ConvertRadiansToDegrees(GetYaw()));
+								 GetRobotYaw());
 
 }
 
@@ -41,7 +41,8 @@ bool Robot::InRadius(Point pnt)
 
 double Robot::GetYaw()
 {
-	return Math::ConvertRadiansToDegrees(pp->GetYaw());
+	return m_CurrentLocation.GetYaw();
+//	return Math::ConvertRadiansToDegrees(pp->GetYaw());
 }
 
 void Robot::SetSpeed(double linearSpeed, double angularSpeed)
@@ -66,9 +67,9 @@ double Robot::GetX()
 {
 	const int GRAPH_RESOLUTION = 10;
 
-	double NewX = m_CurrentLocation.GetX() - (2 * (m_CurrentLocation.GetX() - m_StartPoint.GetX()));
+	double NewX = m_CurrentLocation.GetX() - (2 * (m_CurrentLocation.GetX() - m_StartLocation.GetX()));
 
-	double retVal = m_StartPoint.GetX() + (NewX - m_StartPoint.GetX()) * GRAPH_RESOLUTION;
+	double retVal = m_StartLocation.GetX() + (NewX - m_StartLocation.GetX()) * GRAPH_RESOLUTION;
 
 	return retVal;
 }
@@ -77,7 +78,7 @@ double Robot::GetY()
 {
 	const int GRAPH_RESOLUTION = 10;
 
-	double retVal = m_StartPoint.GetY() + (GetRobotY() - m_StartPoint.GetY()) * GRAPH_RESOLUTION;
+	double retVal = m_StartLocation.GetY() + (GetRobotY() - m_StartLocation.GetY()) * GRAPH_RESOLUTION;
 
 	return retVal;
 }
@@ -96,5 +97,10 @@ double Robot::GetRobotX()
 double Robot::GetRobotY()
 {
 	return pp->GetYPos();
+}
+
+double Robot::GetRobotYaw()
+{
+	return Math::ConvertRadiansToDegrees(pp->GetYaw());
 }
 

@@ -24,7 +24,7 @@ public:
 	LaserProxy *lp;
 
 public:
-	Robot(string ip, int port, Point StartPoint);
+	Robot(string ip, int port, Location StartLocation);
 	void Read();
 	double GetX();
 	double GetY();
@@ -42,9 +42,13 @@ public:
 public:
 	double GetRobotX();
 	double GetRobotY();
+	double GetRobotYaw();
 
 	Location m_CurrentLocation;
-	Point m_StartPoint;
+
+	Location GetStartLocation() {return m_StartLocation; }
+
+	Location m_StartLocation;
 };
 
 #endif /* ROBOT_H_ */

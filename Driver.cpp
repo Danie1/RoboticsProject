@@ -18,68 +18,111 @@ double Driver::distance(double x1, double y1, double x2, double y2) {
 	return sqrt(pow(x1 - x2, 2) + pow(y1 - y2, 2));
 }
 
-void Driver::MoveToWayPoint(Point pnt)
+void Driver::MoveToWayPoint(Point pnt, Point CurrWayPoint)
 {
 	Point CurrPoint = Point(m_robot.GetX(), m_robot.GetY());
 	if (CurrPoint.GetDistanceFrom(pnt) < tolerance)
 	{
-		printf("next waypoint is close. skipping it\r\n");
+		MOVING_MSG("Next waypoint is close. Skipping it.\r\n");
 		return;
 	}
 	TurnToPoint(pnt);
 
-	if (!MoveToPoint(pnt))
+	if (!MoveToPoint(pnt, CurrWayPoint))
 	{
 		return;
 	}
 }
 
-bool Driver::MoveToPoint(Point pnt) {
+bool Driver::MoveToPoint(Point pnt, Point CurrWayPoint) {
 	m_robot.Read();
 
 	Point CurrPoint = Point(m_robot.GetX(), m_robot.GetY());
 	//cout << "x: " << CurrPoint.GetX() << ", y: " << CurrPoint.GetY() << endl;
 
 #ifdef ENABLE_PARTICLES
-	Location oldLocation(m_robot.GetX(), m_robot.GetY(), m_robot.GetYaw());
-	int counter = 0;
+	Location oldLocation = Location(m_robot.GetX(),
+									m_robot.GetY(),
+									m_robot.GetYaw());
 #endif
 
 	Particle* bestPart;
 
-	while (CurrPoint.GetDistanceFrom(pnt)> slowSpeedRange) {
-		m_robot.SetSpeed(linearSpeed, 0);
+	double speedStep = linearSpeed / 10;
+	double speedToSet = 0;
+
+	double slowingDownRange = CurrPoint.GetDistanceFrom(pnt) / 3.0;
+	// acceleartion to full speed loop
+	while (CurrPoint.GetDistanceFrom(pnt) > slowingDownRange &&
+		   CurrPoint.GetDistanceFrom(pnt) > slowSpeedRange + slowingDownDist)
+	{
+		if (speedToSet < linearSpeed)
+		{
+			speedToSet += speedStep;
+		}
+		m_robot.SetSpeed(speedToSet, 0);
 
 		m_robot.Read();
 
 #ifdef ENABLE_PARTICLES
-		counter++;
-		if (counter % 1 == 0)
-		{
-			printf("Got HERE! \r\n");
-			m_localization.Update(m_robot.GetX() - oldLocation.GetX(),
-								  m_robot.GetY() - oldLocation.GetY(),
-								  m_robot.GetYaw() - oldLocation.GetYaw(), m_robot);
-			oldLocation.SetX(m_robot.GetX());
-			oldLocation.SetY(m_robot.GetY());
-			oldLocation.SetYaw(m_robot.GetYaw());
-			counter = 0;
-		}
+		m_localization.Update(m_robot.GetX() - oldLocation.GetX(),
+							  m_robot.GetY() - oldLocation.GetY(),
+							  m_robot.GetYaw() - oldLocation.GetYaw(), m_robot);
+		oldLocation.SetX(m_robot.GetX());
+		oldLocation.SetY(m_robot.GetY());
+		oldLocation.SetYaw(m_robot.GetYaw());
 
-		bestPart = m_localization.BestParticle();
+	bestPart = m_localization.BestParticle();
 
-		printf("robotLoc (%f,%f,%f). bestPart (%f,%f,%f)\r\n", m_robot.GetX(), m_robot.GetY(), m_robot.GetYaw(),
-																bestPart->GetX(), bestPart->GetY(), bestPart->GetYaw());
+	MOVING_MSG("robotLoc (%f,%f,%f). bestPart (%f,%f,%f)\r\n", m_robot.GetX(), m_robot.GetY(), m_robot.GetYaw(),
+															bestPart->GetX(), bestPart->GetY(), bestPart->GetYaw());
 
-		//m_robot.SetOdometry(bestPart->GetX(), bestPart->GetY(), m_robot.GetYaw());
-
-		//m_robot.Read();
 
 #endif
 
 
 		CurrPoint = Point(m_robot.GetX(), m_robot.GetY());
-		printf("FullSpeed: Distance from point is: %f - Point(%f, %f) , Dest Point: (%f, %f) \r\n", CurrPoint.GetDistanceFrom(pnt),
+		MOVING_MSG("FullSpeed (%f): Distance from point is: %f - Point(%f, %f) , Dest Point: (%f, %f) \r\n",
+																	speedToSet,
+																	CurrPoint.GetDistanceFrom(pnt),
+																	m_robot.GetX(),
+																	m_robot.GetY(),
+																	pnt.GetX(),
+																	pnt.GetY());
+	}
+
+	speedToSet = MAX(speedToSet, (linearSpeed * slowSpeedRatio));
+	// slowing down loop
+	while (CurrPoint.GetDistanceFrom(pnt) > slowSpeedRange)
+	{
+		if (speedToSet > linearSpeed * slowSpeedRatio)
+		{
+			speedToSet -= speedStep;
+		}
+		m_robot.SetSpeed(speedToSet, 0);
+		m_robot.Read();
+
+#ifdef ENABLE_PARTICLES
+		m_localization.Update(m_robot.GetX() - oldLocation.GetX(),
+							  m_robot.GetY() - oldLocation.GetY(),
+							  m_robot.GetYaw() - oldLocation.GetYaw(), m_robot);
+		oldLocation.SetX(m_robot.GetX());
+		oldLocation.SetY(m_robot.GetY());
+		oldLocation.SetYaw(m_robot.GetYaw());
+
+	bestPart = m_localization.BestParticle();
+
+	MOVING_MSG("robotLoc (%f,%f,%f). bestPart (%f,%f,%f)\r\n", m_robot.GetX(), m_robot.GetY(), m_robot.GetYaw(),
+															bestPart->GetX(), bestPart->GetY(), bestPart->GetYaw());
+
+
+#endif
+
+		CurrPoint = Point(m_robot.GetX(), m_robot.GetY());
+
+		MOVING_MSG("slowing down speed (%f): Distance from point is: %f - Point(%f, %f) , Dest Point: (%f, %f) \r\n",
+																	speedToSet,
+																	CurrPoint.GetDistanceFrom(pnt),
 																	m_robot.GetX(),
 																	m_robot.GetY(),
 																	pnt.GetX(),
@@ -89,23 +132,45 @@ bool Driver::MoveToPoint(Point pnt) {
 	double OldDistance = -1;
 	double NewDistance = -1;
 
-	while (CurrPoint.GetDistanceFrom(pnt) > tolerance) {
+	// slow speed until dest
+	while (CurrPoint.GetDistanceFrom(pnt) > tolerance)
+	{
 		m_robot.SetSpeed(linearSpeed * slowSpeedRatio, 0);
 
 		m_robot.Read();
 
 		OldDistance = CurrPoint.GetDistanceFrom(pnt);
 		CurrPoint = Point(m_robot.GetX(), m_robot.GetY());
+
+
+#ifdef ENABLE_PARTICLES
+		m_localization.Update(m_robot.GetX() - oldLocation.GetX(),
+							  m_robot.GetY() - oldLocation.GetY(),
+							  m_robot.GetYaw() - oldLocation.GetYaw(), m_robot);
+		oldLocation.SetX(m_robot.GetX());
+		oldLocation.SetY(m_robot.GetY());
+		oldLocation.SetYaw(m_robot.GetYaw());
+
+	bestPart = m_localization.BestParticle();
+
+	MOVING_MSG("robotLoc (%f,%f,%f). bestPart (%f,%f,%f)\r\n", m_robot.GetX(), m_robot.GetY(), m_robot.GetYaw(),
+															bestPart->GetX(), bestPart->GetY(), bestPart->GetYaw());
+
+
+#endif
+
 		NewDistance = CurrPoint.GetDistanceFrom(pnt);
 
-		printf("SlowSpeed: Distance from point is: %f - Point(%f, %f) , Dest Point: (%f, %f) \r\n", CurrPoint.GetDistanceFrom(pnt),
+		MOVING_MSG("SlowSpeed (%f): Distance from point is: %f - Point(%f, %f) , Dest Point: (%f, %f) \r\n",
+																	linearSpeed * slowSpeedRatio,
+																	CurrPoint.GetDistanceFrom(pnt),
 																	m_robot.GetX(),
 																	m_robot.GetY(),
 																	pnt.GetX(),
 																	pnt.GetY());
 		if (OldDistance < NewDistance)
 		{
-			printf("Oops - We moved too far! \r\n");
+			MOVING_MSG("Oops - We moved too far! \r\n");
 			m_robot.SetSpeed(0, 0);
 			return false;
 		}
@@ -144,7 +209,7 @@ void Driver::TurnToDegree(double degree)
 	m_robot.Read();
 
 	double CurrRobotYaw = m_robot.GetYaw();
-	if(abs(CurrRobotYaw - degree) < 0.4)
+	if(abs(CurrRobotYaw - degree) < slowSpeedYawRange)
 		return;
 
 	double DegreeDelta = fmod((CurrRobotYaw - degree) + 360, 360);
@@ -153,12 +218,12 @@ void Driver::TurnToDegree(double degree)
 	if (DegreeDelta < 180.0)
 	{
 		speed = RIGHT_ANGULAR_SPEED;
-		printf("Curr at: %f, Turning to: %f, by: %f \r\n", CurrRobotYaw, degree, DegreeDelta);
+		TURNING_MSG("Curr at: %f, Turning to: %f, by: %f \r\n", CurrRobotYaw, degree, DegreeDelta);
 	}
 	else
 	{
 		speed = LEFT_ANGULAR_SPEED;
-		printf("Curr at: %f, Turning to: %f, by: %f \r\n", CurrRobotYaw, degree, 360 - DegreeDelta);
+		TURNING_MSG("Curr at: %f, Turning to: %f, by: %f \r\n", CurrRobotYaw, degree, 360 - DegreeDelta);
 	}
 
 	m_robot.SetSpeed(0,speed);
@@ -166,7 +231,7 @@ void Driver::TurnToDegree(double degree)
 	while(abs(m_robot.GetYaw() - degree) > yawTolerance && !IsBeyondDegree(degree, speed))
 	{
 		m_robot.Read();
-		printf("fast: Curr Robot Yaw: %f || Degree: %f\r\n", m_robot.GetYaw(), degree);
+		TURNING_MSG("fast: Curr Robot Yaw: %f || Degree: %f\r\n", m_robot.GetYaw(), degree);
 	}
 
 	//slow down before reaching angle target
@@ -174,7 +239,7 @@ void Driver::TurnToDegree(double degree)
 	while(abs(m_robot.GetYaw() - degree) > slowSpeedYawRange && !IsBeyondDegree(degree, speed))
 	{
 		m_robot.Read();
-		printf("slow: Curr Robot Yaw: %f || Degree: %f\r\n", m_robot.GetYaw(), degree);
+		TURNING_MSG("slow: Curr Robot Yaw: %f || Degree: %f\r\n", m_robot.GetYaw(), degree);
 	}
 
 	m_robot.SetSpeed(0,0);
@@ -182,17 +247,11 @@ void Driver::TurnToDegree(double degree)
 
 void Driver::TurnToPoint(Point loc)
 {
-	printf("1: Turning from: (%f, %f), to: (%f, %f)  \r\n", m_robot.GetX(),
+	printf("Turning from: (%f, %f), to: (%f, %f)  \r\n", m_robot.GetX(),
 														 m_robot.GetY(),
 														 loc.GetX(),
 														 loc.GetY());
 	TurnToDegree(m_robot.GetCurrentLocation().GetAngleFrom(loc));
-	m_robot.Read();
-
-	printf("2: Turning from: (%f, %f), to: (%f, %f)  \r\n", m_robot.GetX(),
-														 m_robot.GetY(),
-														 loc.GetX(),
-														 loc.GetY());
 }
 
 Driver::~Driver() {
